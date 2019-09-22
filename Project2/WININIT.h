@@ -1,0 +1,22 @@
+#pragma once
+#include <Windows.h>
+#include <windowsx.h>
+#include "D3DINIT.h"
+
+#define WINDOW_CLASS_NAME "WINCLASS1"
+
+
+
+
+class WININIT
+{
+	
+public:
+	static OBJECT *set_gg;
+	WININIT(int WIDTH,int HEIGHT, HINSTANCE hinstance, HWND &hwnd);
+	~WININIT();
+	void SetPlayer(OBJECT * obj);
+
+	
+};
+
