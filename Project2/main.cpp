@@ -66,8 +66,11 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		{	
 
 			d3d.RenderStart();
-			d3d.SetView();
-			
+			POINT p;
+			GetCursorPos(&p);
+			float ang = (WINDOW_WIDTH / 2 - p.x)*XM_PI/180;
+			d3d.SetView(ang);
+			SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 			test->step();
 			piramide1.step();
 			piramide.draw();

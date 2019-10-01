@@ -81,7 +81,7 @@ public:
 	void RenderEnd();//отрисовка 
 	float ViewAngle = 0;
 	HRESULT InitMatrixes(); //Инициализация матриц
-	void SetView(); // изменение матрицы мира
+	void SetView(float angle); // изменение матрицы мира
 	HRESULT InitGeometry();
 	HRESULT CompileShaderFromFile(LPCSTR szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 	HWND main_window_handle;

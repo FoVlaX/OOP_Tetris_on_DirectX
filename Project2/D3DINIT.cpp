@@ -259,8 +259,8 @@ HRESULT D3DINIT::InitMatrixes()
 	vLightDirs[0] = { -0.5f,0.5f,-0.5f,1.f };
 	vLightDirs[1] = { -0.5f,0.5f,0.5f,1.f };
 
-	vLightColors[0] = { 1.f,1.f,1.f,1.f };
-	vLightColors[1] = {1.f, 1.f, 1.f, 1.f};
+	vLightColors[0] = { 0.8f,1.f,1.f,1.f };
+	vLightColors[1] = {0.8f, 1.f, 1.f, 1.f};
 
 	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 	ConstantBuffer cb;
@@ -276,12 +276,14 @@ HRESULT D3DINIT::InitMatrixes()
 	return S_OK;
 }
 
-void D3DINIT::SetView()
+void D3DINIT::SetView(float angle)
 {
 	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f);
-	
-	g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(0.003f),0.f, cos(0.003f)));
-	XMVECTOR Eye = g_At + g_Eye;
+	if (angle != 0)
+	{
+		g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(angle), 0.f, cos(angle)));
+	}
+	XMVECTOR Eye =g_Eye+g_At;
 	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up);
 }
 
