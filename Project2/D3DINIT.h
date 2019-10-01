@@ -13,7 +13,7 @@
 #define WINDOW_HEIGHT 800 //размеры окна
 #define WINDOW_WIDTH 800
 #define BBP 16 //глубина цвета
-
+#define MX_SETWORLD 0x101;
 #pragma comment(lib,"D3DX11.lib") // вот оно то что надо было подключиtb
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d11.lib")
@@ -41,17 +41,18 @@ static XMMATRIX g_View; //матрциа вида
 static XMMATRIX g_Projection; //матрица проекции
 static float pulse = 0.0f;
 static bool Bpulse = true;
+static FLOAT t = 0.0f;
 
-
-
-
+static XMFLOAT4 vLightDirs[2];
+static XMFLOAT4 vLightColors[2];
+static XMFLOAT4 vOutputColor = { 0.9f,0.8f,0.9f,1.f};
 
 static int setid = 0;
 
 struct SimpleVertex
 {
 	XMFLOAT3 Pos;
-	XMFLOAT4 Color; //каждая вершна содержит инфу о цвете
+	XMFLOAT3 Normal; //каждая вершна содержит инфу о цвете
 };
 
 //Структура константного буфера
@@ -61,6 +62,9 @@ struct ConstantBuffer
 	XMMATRIX mWorld; //матрица мира
 	XMMATRIX mView; //марица вида
 	XMMATRIX mProjection; //матрица проекции
+	XMFLOAT4 vLightDir[2];
+	XMFLOAT4 vLightColor[2];
+	XMFLOAT4 vOutputColor;
 };
 
 
@@ -68,8 +72,7 @@ class D3DINIT
 {
 	
 public:
-	static int global_ids[100];
-	static int current_id;
+
 	D3DINIT(HWND mwh);
 	~D3DINIT();
 	HRESULT InitDevice();//инициализайция директХ
@@ -78,7 +81,7 @@ public:
 	void RenderEnd();//отрисовка 
 	float ViewAngle = 0;
 	HRESULT InitMatrixes(); //Инициализация матриц
-	void SetMatrixes(float angle); // изменение матрицы мира
+	void SetView(); // изменение матрицы мира
 	HRESULT InitGeometry();
 	HRESULT CompileShaderFromFile(LPCSTR szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 	HWND main_window_handle;
@@ -86,6 +89,9 @@ public:
 	void SetGameSpeed(int spd);
 private:
 	int GameSpeed = 1000 / 30;
+	XMVECTOR g_Eye = XMVectorSet(0.0f, 0.0f, -9.0f, 0.0f); //откуда смотрим
+	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
+	XMVECTOR g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
 };
 
 
@@ -94,6 +100,9 @@ class OBJECT
 {
 
 	public:
+		static OBJECT* set_gg;
+		static int global_ids[100];
+		static int current_id;
 		OBJECT(char const* vertxt,HRESULT &hr); // загрузка из файла вершин и порядка их отрисовки
 		///-----------------------------------------------------------------------------------------------------------
 		float x = 0;

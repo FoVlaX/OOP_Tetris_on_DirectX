@@ -9,7 +9,6 @@ int WINAPI WinMain(HINSTANCE hinstance,
 {
 	MSG msg;
 
-
 	HWND hwnd;
 	WININIT win(WINDOW_WIDTH, WINDOW_HEIGHT, hinstance, hwnd);
 
@@ -42,6 +41,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	bool dir = true;
 	HRESULT hr = S_OK;
 	OBJECT piramide("ver.txt",hr);
+	piramide.y = -1.0f;
 	OBJECT piramide1("ver.txt", hr);
 	piramide1.x = 1.f;
 	if (FAILED(hr))
@@ -50,9 +50,9 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	}
 	piramide.setname("piramide");
 
-	win.SetPlayer(&piramide);
-	OBJECT *test = (OBJECT*)D3DINIT::global_ids[0];
-	d3d.SetGameSpeed(60);
+	win.SetPlayer((OBJECT*)OBJECT::global_ids[1]);
+	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];
+	d3d.SetGameSpeed(120);
 	while (1)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -64,10 +64,12 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		}
 		else
 		{	
-			test->xang += 0.03f;
-			test->zang += 0.03f;
+
 			d3d.RenderStart();
+			d3d.SetView();
+			
 			test->step();
+			piramide1.step();
 			piramide.draw();
 			piramide1.draw();
 			d3d.RenderEnd();

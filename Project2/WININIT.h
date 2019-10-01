@@ -12,11 +12,9 @@ class WININIT
 {
 	
 public:
-	static OBJECT *set_gg;
+
 	WININIT(int WIDTH,int HEIGHT, HINSTANCE hinstance, HWND &hwnd);
 	~WININIT();
 	void SetPlayer(OBJECT * obj);
-
-	
 };
 

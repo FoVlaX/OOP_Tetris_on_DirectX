@@ -1,9 +1,9 @@
 #include "D3DINIT.h"
 using namespace std;
 
-int D3DINIT::global_ids[100] = { 0 };
-int D3DINIT::current_id = 0;
-
+int OBJECT::global_ids[100] = { 0 };
+int OBJECT::current_id = 0;
+OBJECT* OBJECT::set_gg = NULL;
 D3DINIT::D3DINIT(HWND mwh)
 {
 	main_window_handle = mwh;
@@ -181,7 +181,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},
 	};
 	UINT numElements = ARRAYSIZE(layout);
 	//создание шаблона вершин
@@ -256,68 +256,33 @@ HRESULT D3DINIT::InitMatrixes()
 	g_View = XMMatrixLookAtLH(Eye, At, Up);
 
 	//инициализация матрицы проекции
+	vLightDirs[0] = { -0.5f,0.5f,-0.5f,1.f };
+	vLightDirs[1] = { -0.5f,0.5f,0.5f,1.f };
+
+	vLightColors[0] = { 1.f,1.f,1.f,1.f };
+	vLightColors[1] = {1.f, 1.f, 1.f, 1.f};
 
 	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 	ConstantBuffer cb;
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
+	cb.vLightColor[0] = vLightColors[0];
+	cb.vLightColor[1] = vLightColors[1];
+	cb.vLightDir[0] = vLightDirs[0];
+	cb.vLightDir[1] = vLightDirs[1];
+	cb.vOutputColor = vOutputColor;
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 	return S_OK;
 }
 
-void D3DINIT::SetMatrixes(float angle)
+void D3DINIT::SetView()
 {
-	static float t = 0.0f;
-
-	if (g_drivertype == D3D_DRIVER_TYPE_REFERENCE)
-	{
-		t += (float)XM_PI*0.0125f;
-	}
-	else
-	{
-		static DWORD dwTimeStart = 0;
-		DWORD dwTimeCur = GetTickCount();
-		if (dwTimeStart == 0)
-			dwTimeStart = dwTimeCur;
-		t = (dwTimeCur - dwTimeStart) / 1000.0f;
-	}
-
-	if (ViewAngle > XM_2PI) ViewAngle -= XM_2PI;
-
-	ViewAngle += (float)XM_PI*0.00025;
-	XMMATRIX mPos = XMMatrixRotationY(-t + angle); //поворачиваем смещенную от центра пираамиду на угол -т ++ англе
-	XMMATRIX mSpin = XMMatrixRotationY(2 * t);
-	XMMATRIX mSpin2 = XMMatrixRotationZ(2 * t);// вращаем пирамиду вокруг воей оси
-	XMMATRIX mTrans = XMMatrixTranslation(-3.0f, 0.f, 0.f); //смщаем пирамиду на -3 по оси х
-	XMMATRIX mScale = XMMatrixScaling(0.5f + pulse, 0.5f + pulse, 0.5f + pulse); //меняем маштаб пирамиды
-	if (Bpulse && pulse < 0.3f) pulse += 0.00004f;
-	else Bpulse = false;
-
-
-	if (!Bpulse && pulse > 0.0f) pulse -= 0.00004f;
-	else Bpulse = true;
-
-
-	float x = -12.0*cos(XM_PIDIV4 / 2);
-	float y = 12.0*sin(XM_PIDIV4 / 2);
-	XMVECTOR Eye = XMVectorSet(0.0f, y, x, 0.0f); //откуда смотрим
-	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //Куда смотрим
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
-	g_View = XMMatrixLookAtLH(Eye, At, Up);
-
-	//g_World = XMMatrixRotationY(t);
-
-	// обновляем констатный буффер создадим структуру и кинем ее в наш буфер
-
-	g_World = mScale * mSpin*mSpin2*mTrans*mPos; //маштабируем поворачиваем вокруг оси смешаемм на 3 и поворачиваем относительно У на заданный угол все изи
-
-	ConstantBuffer cb;
-	cb.mWorld = XMMatrixTranspose(g_World);
-	cb.mView = XMMatrixTranspose(g_View);
-	cb.mProjection = XMMatrixTranspose(g_Projection);
-	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
-
+	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f);
+	
+	g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(0.003f),0.f, cos(0.003f)));
+	XMVECTOR Eye = g_At + g_Eye;
+	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up);
 }
 
 OBJECT::OBJECT(char const* vertxt, HRESULT &hr)
@@ -340,10 +305,10 @@ OBJECT::OBJECT(char const* vertxt, HRESULT &hr)
 		fscanf(vtxt, "%f", &vercicles[i].Pos.x);
 		fscanf(vtxt, "%f", &vercicles[i].Pos.y);
 		fscanf(vtxt, "%f", &vercicles[i].Pos.z);
-		fscanf(vtxt, "%f", &vercicles[i].Color.x);
-		fscanf(vtxt, "%f", &vercicles[i].Color.y);
-		fscanf(vtxt, "%f", &vercicles[i].Color.z);
-		fscanf(vtxt, "%f", &vercicles[i].Color.w);
+		fscanf(vtxt, "%f", &vercicles[i].Normal.x);
+		fscanf(vtxt, "%f", &vercicles[i].Normal.y);
+		fscanf(vtxt, "%f", &vercicles[i].Normal.z);
+
 	}
 	
 	fscanf(vtxt, "%i",&m);
@@ -390,9 +355,9 @@ OBJECT::OBJECT(char const* vertxt, HRESULT &hr)
 	delete[]vercicles;
 	indexes = NULL;
 	delete[]indexes;
-	id = D3DINIT::current_id;
-	D3DINIT::current_id++;
-	D3DINIT::global_ids[id] = int(this);
+	id = OBJECT::current_id;
+	OBJECT::current_id++;
+	OBJECT::global_ids[id] = int(this);
 	fclose(vtxt);
 }
 void OBJECT::step()
@@ -437,10 +402,15 @@ void OBJECT::draw()
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
+	cb.vLightColor[0] = vLightColors[0];
+	cb.vLightColor[1] = vLightColors[1];
+	cb.vLightDir[0] = vLightDirs[0];
+	cb.vLightDir[1] = vLightDirs[1];
+	cb.vOutputColor = vLightColors[0];
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer); // 0 - точка входа в констант буффер в шейдере
-
+	g_pImmediateContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	g_pImmediateContext->DrawIndexed(m, 0, 0);
 
 }
