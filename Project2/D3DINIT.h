@@ -81,7 +81,7 @@ public:
 	void RenderEnd();//отрисовка 
 	float ViewAngle = 0;
 	HRESULT InitMatrixes(); //Инициализация матриц
-	void SetView(float angle); // изменение матрицы мира
+	void SetView(float angleY,float angleX); // изменение матрицы мира
 	HRESULT InitGeometry();
 	HRESULT CompileShaderFromFile(LPCSTR szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 	HWND main_window_handle;
@@ -92,6 +92,8 @@ private:
 	XMVECTOR g_Eye = XMVectorSet(0.0f, 0.0f, -9.0f, 0.0f); //откуда смотрим
 	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	XMVECTOR g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
+	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+	float vertAng = 0;
 };
 
 

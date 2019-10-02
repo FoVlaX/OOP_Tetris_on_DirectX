@@ -53,6 +53,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	win.SetPlayer((OBJECT*)OBJECT::global_ids[1]);
 	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];
 	d3d.SetGameSpeed(120);
+	ShowCursor(FALSE);
 	while (1)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -68,8 +69,9 @@ int WINAPI WinMain(HINSTANCE hinstance,
 			d3d.RenderStart();
 			POINT p;
 			GetCursorPos(&p);
-			float ang = (WINDOW_WIDTH / 2 - p.x)*XM_PI/180;
-			d3d.SetView(ang);
+			float ang = 0.3*(WINDOW_WIDTH / 2 - p.x)*XM_PI/180;
+			float ang2 = 0.3*(WINDOW_HEIGHT / 2 - p.y) * XM_PI / 180;
+			d3d.SetView(ang,ang2);
 			SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 			test->step();
 			piramide1.step();

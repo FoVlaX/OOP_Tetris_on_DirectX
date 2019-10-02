@@ -6,7 +6,7 @@ cbuffer ConstantBuffer : register( b0 )
 	matrix Projection;
 	float4 vLightDir[2];
 	float4 vLightColor[2];
-	float vOutputColor;
+	float4 vOutputColor;
 }
 
 struct VS_INPUT
@@ -27,7 +27,7 @@ struct PS_INPUT
 PS_INPUT VS( VS_INPUT input) 
 {
 	PS_INPUT output = (PS_INPUT)0;
-	output.Pos = mul( Pos, World );
+	output.Pos = mul( input.Pos, World );
 	output.Pos = mul( output.Pos, View);
 	output.Pos = mul( output.Pos, Projection);
 	output.Norm = mul(input.Norm,World);

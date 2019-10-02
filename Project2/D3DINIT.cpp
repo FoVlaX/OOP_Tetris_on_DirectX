@@ -276,12 +276,29 @@ HRESULT D3DINIT::InitMatrixes()
 	return S_OK;
 }
 
-void D3DINIT::SetView(float angle)
+void D3DINIT::SetView(float angleY, float angleX)
 {
 	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f);
-	if (angle != 0)
+	if (angleY != 0 || angleX !=0)
 	{
-		g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(angle), 0.f, cos(angle)));
+		if (angleY != 0) {
+			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY)));
+			helpXas = XMVector3Rotate(helpXas, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY)));
+			
+		}
+		g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(XMVectorGetX(helpXas)*sin(angleX), XMVectorGetY(helpXas) * sin(angleX), XMVectorGetZ(helpXas) * sin(angleX), cos(angleX)));
+		vertAng += angleX * 2;
+		if (vertAng > 2 * XM_PI) vertAng -= 2 * XM_PI;
+		if (vertAng < 0) vertAng += 2 * XM_PI;
+	
+	}
+	if (vertAng > XM_PIDIV2&& vertAng < 3 * XM_PIDIV2)
+	{
+		g_Up = XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f);
+	}
+	else
+	{
+		g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	XMVECTOR Eye =g_Eye+g_At;
 	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up);

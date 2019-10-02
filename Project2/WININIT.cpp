@@ -42,6 +42,7 @@ void WININIT::SetPlayer(OBJECT *obj)
 		if (wparam == 16) //shift
 		{
 			AllocConsole();
+			PostQuitMessage(0);
 		}
 		if (wparam == 37) //left
 		{
