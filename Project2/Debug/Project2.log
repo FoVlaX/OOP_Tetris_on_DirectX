@@ -113,6 +113,9 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathconvert.
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(518,43): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,40): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,51): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(72,14): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(73,15): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-  Project2.vcxproj -> C:\Users\vlad\source\repos\Project2\Debug\Project2.exe
+C:\Users\VLAD\source\repos\GameForWindows\Project2\main.cpp(78,14): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+C:\Users\VLAD\source\repos\GameForWindows\Project2\main.cpp(79,15): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+C:\Users\VLAD\source\repos\GameForWindows\Project2\main.cpp(87,19): warning C4305: +=: усечение из "double" в "float"
+C:\Users\VLAD\source\repos\GameForWindows\Project2\main.cpp(96,19): warning C4305: -=: усечение из "double" в "float"
+C:\Users\VLAD\source\repos\GameForWindows\Project2\main.cpp(100,23): warning C4305: +=: усечение из "double" в "float"
+  Project2.vcxproj -> C:\Users\VLAD\source\repos\GameForWindows\Debug\Project2.exe

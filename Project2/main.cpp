@@ -53,7 +53,13 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	win.SetPlayer((OBJECT*)OBJECT::global_ids[1]);
 	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];
 	d3d.SetGameSpeed(120);
+	test->xs = 2;
 	ShowCursor(FALSE);
+
+	bool pulse = false;
+
+	float scale = 1;
+
 	while (1)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -73,7 +79,25 @@ int WINAPI WinMain(HINSTANCE hinstance,
 			float ang2 = 0.3*(WINDOW_HEIGHT / 2 - p.y) * XM_PI / 180;
 			d3d.SetView(ang,ang2);
 			SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+			if (!pulse && scale < 1.8)
+			{
+				OBJECT::set_gg->xs = scale;
+				OBJECT::set_gg->ys = scale;
+				OBJECT::set_gg->zs = scale;
+				scale += 0.025;
+			}
+			if (scale >= 1.8 && !pulse) pulse = true;
+			if (scale <= 1 && pulse) pulse = false;
+			if (pulse && scale > 1)
+			{
+				OBJECT::set_gg->xs = scale;
+				OBJECT::set_gg->ys = scale;
+				OBJECT::set_gg->zs= scale;
+				scale -= 0.025;
+			}
+			
 			test->step();
+			test->zang += 0.005;
 			piramide1.step();
 			piramide.draw();
 			piramide1.draw();
