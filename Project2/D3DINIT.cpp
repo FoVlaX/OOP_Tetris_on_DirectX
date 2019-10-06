@@ -5,6 +5,7 @@ int OBJECT::global_ids[100] = { 0 };
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
 float D3DINIT::ViewDist = 9.f;
+XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 D3DINIT::D3DINIT(HWND mwh)
 {
 	main_window_handle = mwh;
@@ -234,20 +235,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
 	if (FAILED(hr))
 		return hr;
 	//загрузка текстуры из файла
-	hr = D3DX11CreateShaderResourceViewFromFile(g_pd3device, "tex.dds", NULL, NULL, &g_pTextureRV, NULL);
-	if (FAILED(hr)) return hr;
-	//
-	D3D11_SAMPLER_DESC sampDesc;
-	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // Задаем координаты
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	// Создаем интерфейс сэмпла текстурирования
-	hr = g_pd3device->CreateSamplerState(&sampDesc, &g_pSamplerLinear);
+
 
 	if (FAILED(hr)) return hr;
 	return S_OK;
@@ -337,7 +325,7 @@ void D3DINIT::SetView(float angleY, float angleX)
 	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up);
 }
 
-OBJECT::OBJECT(char const* vertxt, HRESULT &hr)
+OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 {
 	
 	FILE *vtxt;
@@ -413,12 +401,40 @@ OBJECT::OBJECT(char const* vertxt, HRESULT &hr)
 	OBJECT::current_id++;
 	OBJECT::global_ids[id] = int(this);
 	fclose(vtxt);
+
+	hr = D3DX11CreateShaderResourceViewFromFile(g_pd3device, texture, NULL, NULL, &pTextureRV, NULL);
+	//
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // Задаем координаты
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	// Создаем интерфейс сэмпла текстурирования
+	hr = g_pd3device->CreateSamplerState(&sampDesc, &pSamplerLinear);
+
 }
 void OBJECT::step()
 {
+	/*
 	x += vx;
 	y += vy;
 	z += vz;
+	xang += vxang;
+	yang += vyang;
+	zang += vzang;
+	*/
+	XMVECTOR vpmg = XMVectorSet(XMVectorGetX(D3DINIT::g_Eye), 0, XMVectorGetZ(D3DINIT::g_Eye), 0);
+	vpmg = XMVector3Normalize(vpmg);
+	float ang = acos(XMVectorGetX(vpmg));
+	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -ang;
+
+	z += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * cos(ang - XM_PIDIV2): speed * cos(2*XM_PI-ang- XM_PIDIV2);
+	x += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * sin(ang - XM_PIDIV2): speed * sin(2*XM_PI-ang- XM_PIDIV2);
+	
 }
 
 
@@ -461,8 +477,8 @@ void OBJECT::draw()
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer); // 0 - точка входа в констант буффер в шейдере
 	g_pImmediateContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 
-	g_pImmediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
-	g_pImmediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
+	g_pImmediateContext->PSSetShaderResources(0, 1, &pTextureRV);
+	g_pImmediateContext->PSSetSamplers(0, 1, &pSamplerLinear);
 
 	g_pImmediateContext->DrawIndexed(m, 0, 0);
 

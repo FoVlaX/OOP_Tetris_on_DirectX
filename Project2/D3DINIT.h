@@ -85,6 +85,7 @@ class D3DINIT
 {
 	
 public:
+	static XMVECTOR g_Eye;
 	static float ViewDist;
 	D3DINIT(HWND mwh);
 	~D3DINIT();
@@ -102,7 +103,7 @@ public:
 	void SetGameSpeed(int spd);
 private:
 	int GameSpeed = 1000 / 30;
-	XMVECTOR g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f); //откуда смотрим
+	 //откуда смотрим
 	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	XMVECTOR g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
 	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f);
@@ -118,7 +119,7 @@ class OBJECT
 		static OBJECT* set_gg;
 		static int global_ids[100];
 		static int current_id;
-		OBJECT(char const* vertxt,HRESULT &hr); // загрузка из файла вершин и порядка их отрисовки
+		OBJECT(char const* vertxt, char const* texture,HRESULT &hr); // загрузка из файла вершин и порядка их отрисовки
 		///-----------------------------------------------------------------------------------------------------------
 		float x = 0;
 		float y = 0;
@@ -135,6 +136,9 @@ class OBJECT
 		float vx = 0;
 		float vy = 0;
 		float vz = 0;
+		float vxang = 0;
+		float vyang = 0;
+		float vzang = 0;
 		///-----------------------------------------------------------------------------------------------------------
 		void draw(); // функция которая передает буфферы устройству рисвания, переопределяет констатный буффер, выполняет неоюходимые матричные трансформации и отрисовывает данный объект в заднем буффере;
 		void step();
@@ -144,7 +148,10 @@ class OBJECT
 		~OBJECT();
 		OBJECT* getadress();
 		float direction = 0;
+		float speed = 0;
 	private:
+		ID3D11ShaderResourceView* pTextureRV = NULL; //Объект текстуры
+		ID3D11SamplerState* pSamplerLinear = NULL; //параметры nalozheniya текстуры obrazec
 		
 };
 

@@ -43,7 +43,7 @@ PS_INPUT VS( VS_INPUT input)
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	float4 finalcolor = 0;
+	float4 finalcolor = 0.1f;
 	for (int i = 0; i < 1; i++)
 	{
 		finalcolor += saturate(dot((float3)vLightDir[i], input.Norm) * vLightColor[i]);

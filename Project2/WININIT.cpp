@@ -23,13 +23,20 @@ void WININIT::SetPlayer(OBJECT *obj)
 	
 		if (wparam == 38) //up
 		{
-			OBJECT::set_gg->vz = 0.f;
-			OBJECT::set_gg->vx = 0.f;
+			OBJECT::set_gg->speed = 0.f;
+			
 		}
 		if (wparam == 40) //down
 		{
-			OBJECT::set_gg->vz = 0.f;
-			OBJECT::set_gg->vx = 0.f;
+			OBJECT::set_gg->speed = 0.f;
+		}
+		if (wparam == 37) //left
+		{
+			OBJECT::set_gg->vyang = 0.f;
+		}
+		if (wparam == 39) //right
+		{
+			OBJECT::set_gg->vyang = 0.f;
 		}
 	}break;
 	case WM_KEYDOWN:
@@ -41,25 +48,19 @@ void WININIT::SetPlayer(OBJECT *obj)
 		}
 		if (wparam == 37) //left
 		{
-			OBJECT::set_gg->direction -=0.015f;
-			OBJECT::set_gg->yang = OBJECT::set_gg->direction;
-			if (OBJECT::set_gg->direction < 0) OBJECT::set_gg->direction += XM_PI * 2;
+			OBJECT::set_gg->vyang =-0.015f;
 		}
 		if (wparam == 39) //right
 		{
-			OBJECT::set_gg->direction += 0.015f;
-			OBJECT::set_gg->yang = OBJECT::set_gg->direction;
-			if (OBJECT::set_gg->direction > XM_PI * 2) OBJECT::set_gg->direction -= XM_PI * 2;
+			OBJECT::set_gg->vyang = 0.015f;
 		}
 		if (wparam == 38) //up
 		{
-			OBJECT::set_gg->vz = 0.05f*cos(OBJECT::set_gg->direction);
-			OBJECT::set_gg->vx = 0.05f * sin(OBJECT::set_gg->direction);
+			OBJECT::set_gg->speed = 0.09f;
 		}
 		if (wparam == 40) //down
 		{
-			OBJECT::set_gg->vz = -0.05f * cos(OBJECT::set_gg->direction);
-			OBJECT::set_gg->vx = -0.05f * sin(OBJECT::set_gg->direction);
+			OBJECT::set_gg->speed = -0.09f;
 		}
 	}break;
 	case WM_MOUSEWHEEL:

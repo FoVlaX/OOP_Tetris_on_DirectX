@@ -40,9 +40,9 @@ int WINAPI WinMain(HINSTANCE hinstance,
 
 	bool dir = true;
 	HRESULT hr = S_OK;
-	OBJECT piramide("ver.txt",hr);
+	OBJECT piramide("ver.txt", "tex1.dds",hr);
 	piramide.y = -1.0f;
-	OBJECT piramide1("ver.txt", hr);
+	OBJECT piramide1("ver.txt","tex.dds", hr);
 	piramide1.x = 1.f;
 	if (FAILED(hr))
 	{
@@ -73,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 			float ang2 = 0.3*(WINDOW_HEIGHT / 2 - p.y) * XM_PI / 180;
 			d3d.SetView(ang,ang2);
 			SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-			test->step();
+			
 			piramide1.step();
 			piramide.draw();
 			piramide1.draw();
