@@ -20,21 +20,23 @@ void WININIT::SetPlayer(OBJECT *obj)
 	{
 	case WM_KEYUP:
 	{
-		if (wparam == 37) //left
-		{
-			OBJECT::set_gg->vx = 0.f;
-		}
-		if (wparam == 39) //right
-		{
-			OBJECT::set_gg->vx = 0.f;
-		}
+	
 		if (wparam == 38) //up
 		{
-			OBJECT::set_gg->vz = 0.f;
+			OBJECT::set_gg->speed = 0.f;
+			
 		}
 		if (wparam == 40) //down
 		{
-			OBJECT::set_gg->vz = 0.f;
+			OBJECT::set_gg->speed = 0.f;
+		}
+		if (wparam == 37) //left
+		{
+			OBJECT::set_gg->vyang = 0.f;
+		}
+		if (wparam == 39) //right
+		{
+			OBJECT::set_gg->vyang = 0.f;
 		}
 	}break;
 	case WM_KEYDOWN:
@@ -46,30 +48,30 @@ void WININIT::SetPlayer(OBJECT *obj)
 		}
 		if (wparam == 37) //left
 		{
-			OBJECT::set_gg->vx = -0.05f;
+			OBJECT::set_gg->vyang =-0.015f;
 		}
 		if (wparam == 39) //right
 		{
-			OBJECT::set_gg->vx = 0.05f;
+			OBJECT::set_gg->vyang = 0.015f;
 		}
 		if (wparam == 38) //up
 		{
-			OBJECT::set_gg->vz = 0.05f;
+			OBJECT::set_gg->speed = 0.09f;
 		}
 		if (wparam == 40) //down
 		{
-			OBJECT::set_gg->vz = -0.05f;
+			OBJECT::set_gg->speed = -0.09f;
 		}
 	}break;
 	case WM_MOUSEWHEEL:
 	{
 		if (wparam == 4287102976)
 		{
-			OBJECT::set_gg->y -= 0.5f;
+			D3DINIT::ViewDist += 0.4f;
 		}
 		else
 		{
-			OBJECT::set_gg->y += 0.5f;
+			D3DINIT::ViewDist -= 0.4f;
 			
 		}
 

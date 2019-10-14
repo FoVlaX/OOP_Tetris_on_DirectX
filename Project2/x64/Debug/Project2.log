@@ -117,13 +117,19 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathvector.i
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(518,43): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,40): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,51): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(284,75): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(284,53): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(323,16): warning C4477: "fscanf": в строке форматирования "%i" требуется аргумент типа "int *", но вариативный аргумент "1" имеет тип "WORD *"
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(323,16): message : рекомендуется использовать "%hi" в строке форматирования
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(362,35): warning C4311: <function-style-cast>: усечение указателя из "OBJECT *" в "int"
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(285,77): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(285,54): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(286,81): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(286,58): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(289,158): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(289,140): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(289,103): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(289,67): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(340,16): warning C4477: "fscanf": в строке форматирования "%i" требуется аргумент типа "int *", но вариативный аргумент "1" имеет тип "WORD *"
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(340,16): message : рекомендуется использовать "%hi" в строке форматирования
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(379,35): warning C4311: <function-style-cast>: усечение указателя из "OBJECT *" в "int"
   WININIT.cpp
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(362,35): warning C4302: <function-style-cast>: усечение из "OBJECT *" к "int"
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(379,35): warning C4302: <function-style-cast>: усечение из "OBJECT *" к "int"
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\dxgitype.h(12,1): warning C4005: DXGI_STATUS_OCCLUDED: изменение макроопределения
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\winerror.h(55840): message : см. предыдущее определение "DXGI_STATUS_OCCLUDED"
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\dxgitype.h(13,1): warning C4005: DXGI_STATUS_CLIPPED: изменение макроопределения
@@ -362,8 +368,10 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,40): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,51): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Users\vlad\source\repos\Project2\Project2\main.cpp(53,46): warning C4312: приведение типов: преобразование из "int" в "OBJECT *" большего размера
-  Создание кода...
 C:\Users\vlad\source\repos\Project2\Project2\main.cpp(54,47): warning C4312: приведение типов: преобразование из "int" в "OBJECT *" большего размера
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(72,14): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+  Создание кода...
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(73,15): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
 D3DINIT.obj : error LNK2019: ссылка на неразрешенный внешний символ D3D11CreateDeviceAndSwapChain в функции "public: long __cdecl D3DINIT::InitDevice(void)" (?InitDevice@D3DINIT@@QEAAJXZ)
 D3DINIT.obj : error LNK2019: ссылка на неразрешенный внешний символ D3DX11CompileFromFileA в функции "public: long __cdecl D3DINIT::CompileShaderFromFile(char const *,char const *,char const *,struct ID3D10Blob * *)" (?CompileShaderFromFile@D3DINIT@@QEAAJPEBD00PEAPEAUID3D10Blob@@@Z)
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86\D3DX11.lib : warning LNK4272: тип компьютера библиотеки "x86" конфликтует с типом целевого компьютера "x64"

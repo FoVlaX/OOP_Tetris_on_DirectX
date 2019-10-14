@@ -10,10 +10,12 @@
 #include <D3Dcompiler.h>
 #include <D3DX11async.h>
 #include <memory>
+#include <D3DX11tex.h>
 #define WINDOW_HEIGHT 800 //размеры окна
 #define WINDOW_WIDTH 800
 #define BBP 16 //глубина цвета
 #define MX_SETWORLD 0x101;
+
 #pragma comment(lib,"D3DX11.lib") // вот оно то что надо было подключиtb
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d11.lib")
@@ -32,9 +34,12 @@ static ID3D11PixelShader *g_pPixelShader = NULL; // пиксельынй шейдер
 static ID3D11InputLayout *g_pVertexLayout = NULL; // описание формата вершин
 static ID3D11Buffer *g_pVertexBuffer = NULL; // Буфер вершин
 static ID3D11Buffer *g_pIndexBuffer = NULL; //Буфер индексов вершин в каком порядке отрисовывать
-static ID3D11Buffer *g_pConstantBuffer = NULL; // Констатный буфер
+static ID3D11Buffer *g_pConstantBuffer = NULL; 
+static ID3D11Buffer* g_pConstantBufferLight = NULL; // Констатный буфер
 static ID3D11Texture2D* g_pDepthStencil = NULL;
 static ID3D11DepthStencilView* g_pDepthStencilView = NULL;
+
+
 
 static XMMATRIX g_World; //матрица мира00
 static XMMATRIX g_View; //матрциа вида
@@ -45,13 +50,17 @@ static FLOAT t = 0.0f;
 
 static XMFLOAT4 vLightDirs[2];
 static XMFLOAT4 vLightColors[2];
-static XMFLOAT4 vOutputColor = { 0.9f,0.8f,0.9f,1.f};
+static XMFLOAT4 vOutputColor = { 0.2f,0.8f,0.9f,1.f}; //цвет выходной 
+static ID3D11ShaderResourceView* g_pTextureRV = NULL; //Объект текстуры
+static ID3D11SamplerState* g_pSamplerLinear = NULL; //параметры nalozheniya текстуры obrazec
+
 
 static int setid = 0;
 
 struct SimpleVertex
 {
 	XMFLOAT3 Pos;
+	XMFLOAT2 Tex;
 	XMFLOAT3 Normal; //каждая вершна содержит инфу о цвете
 };
 
@@ -62,17 +71,22 @@ struct ConstantBuffer
 	XMMATRIX mWorld; //матрица мира
 	XMMATRIX mView; //марица вида
 	XMMATRIX mProjection; //матрица проекции
+	
+};
+
+struct ConstantBufferLight
+{
 	XMFLOAT4 vLightDir[2];
 	XMFLOAT4 vLightColor[2];
 	XMFLOAT4 vOutputColor;
 };
 
-
 class D3DINIT
 {
 	
 public:
-
+	static XMVECTOR g_Eye;
+	static float ViewDist;
 	D3DINIT(HWND mwh);
 	~D3DINIT();
 	HRESULT InitDevice();//инициализайция директХ
@@ -89,7 +103,7 @@ public:
 	void SetGameSpeed(int spd);
 private:
 	int GameSpeed = 1000 / 30;
-	XMVECTOR g_Eye = XMVectorSet(0.0f, 0.0f, -9.0f, 0.0f); //откуда смотрим
+	 //откуда смотрим
 	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	XMVECTOR g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
 	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f);
@@ -105,7 +119,7 @@ class OBJECT
 		static OBJECT* set_gg;
 		static int global_ids[100];
 		static int current_id;
-		OBJECT(char const* vertxt,HRESULT &hr); // загрузка из файла вершин и порядка их отрисовки
+		OBJECT(char const* vertxt, char const* texture,HRESULT &hr); // загрузка из файла вершин и порядка их отрисовки
 		///-----------------------------------------------------------------------------------------------------------
 		float x = 0;
 		float y = 0;
@@ -122,6 +136,9 @@ class OBJECT
 		float vx = 0;
 		float vy = 0;
 		float vz = 0;
+		float vxang = 0;
+		float vyang = 0;
+		float vzang = 0;
 		///-----------------------------------------------------------------------------------------------------------
 		void draw(); // функция которая передает буфферы устройству рисвания, переопределяет констатный буффер, выполняет неоюходимые матричные трансформации и отрисовывает данный объект в заднем буффере;
 		void step();
@@ -130,7 +147,11 @@ class OBJECT
 		ID3D11Buffer *pIndexBuffer = NULL; // Буфер индексов
 		~OBJECT();
 		OBJECT* getadress();
+		float direction = 0;
+		float speed = 0;
 	private:
+		ID3D11ShaderResourceView* pTextureRV = NULL; //Объект текстуры
+		ID3D11SamplerState* pSamplerLinear = NULL; //параметры nalozheniya текстуры obrazec
 		
 };
 
