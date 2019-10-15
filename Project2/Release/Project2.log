@@ -113,22 +113,9 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathconvert.
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(518,43): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,40): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,51): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(306,77): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(306,54): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(307,81): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(307,58): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(310,158): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(310,140): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(310,103): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(310,67): warning C4244: аргумент: преобразование "double" в "FLOAT", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(363,16): warning C4477: "fscanf": в строке форматирования "%i" требуется аргумент типа "int *", но вариативный аргумент "1" имеет тип "WORD *"
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(363,16): message : рекомендуется использовать "%hi" в строке форматирования
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(432,12): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(435,107): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.cpp(436,107): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
   Создание кода
-  0 of 88 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  2 of 96 functions ( 2.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Создание кода завершено
   Project2.vcxproj -> C:\Users\vlad\source\repos\Project2\Release\Project2.exe

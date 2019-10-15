@@ -1,7 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include "D3DINIT.h"
 #include "WININIT.h"
-
+#include "server.h"
 int WINAPI WinMain(HINSTANCE hinstance,
 	HINSTANCE hpprevinstance,
 	LPSTR lpcmdline,
@@ -12,6 +12,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	HWND hwnd;
 	WININIT win(WINDOW_WIDTH, WINDOW_HEIGHT, hinstance, hwnd);
 
+
 	if (hwnd == NULL)
 	{
 		return 0;
@@ -19,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 
 	D3DINIT d3d(hwnd);
 	main_instance = hinstance;
-
+	
 	if (FAILED(d3d.InitDevice()))
 	{
 		d3d.CleanUpDevice();
@@ -37,20 +38,20 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		d3d.CleanUpDevice();
 		return 0;
 	}
-
+	
 	bool dir = true;
 	HRESULT hr = S_OK;
-	OBJECT piramide("ver.txt", "tex1.dds",hr);
+	OBJECT piramide("test3.obj", "tex1.dds",hr);
 	piramide.y = -1.0f;
-	OBJECT piramide1("ver.txt","tex.dds", hr);
-	piramide1.x = 1.f;
+
+	server SRVR(hr);
 	if (FAILED(hr))
 	{
 		return 0;
 	}
 	piramide.setname("piramide");
 
-	win.SetPlayer((OBJECT*)OBJECT::global_ids[1]);
+	win.SetPlayer((OBJECT*)OBJECT::global_ids[0]);
 	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];
 	d3d.SetGameSpeed(120);
 	ShowCursor(FALSE);
@@ -65,7 +66,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		}
 		else
 		{	
-
+			state mes;
 			d3d.RenderStart();
 			POINT p;
 			GetCursorPos(&p);
@@ -73,10 +74,14 @@ int WINAPI WinMain(HINSTANCE hinstance,
 			float ang2 = 0.3*(WINDOW_HEIGHT / 2 - p.y) * XM_PI / 180;
 			d3d.SetView(ang,ang2);
 			SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-			
-			piramide1.step();
+			if (SRVR.recive(mes))
+			{
+				OBJECT::set_gg->x = mes.x;
+				OBJECT::set_gg->y = mes.y;
+				OBJECT::set_gg->z = mes.z;
+			}
+			piramide.step();
 			piramide.draw();
-			piramide1.draw();
 			d3d.RenderEnd();
 		}
 

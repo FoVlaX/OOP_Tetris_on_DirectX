@@ -6,6 +6,7 @@ int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
 float D3DINIT::ViewDist = 9.f;
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 D3DINIT::D3DINIT(HWND mwh)
 {
 	main_window_handle = mwh;
@@ -327,20 +328,99 @@ void D3DINIT::SetView(float angleY, float angleX)
 
 OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 {
-	
-	FILE *vtxt;
-	
+
+	FILE* vtxt;
+
 	vtxt = fopen(vertxt, "r");// открываем наши фалйлы
 
+	XMFLOAT3* vert = new XMFLOAT3;
+	XMFLOAT2* vtext = new XMFLOAT2;
+	XMFLOAT3* vnorm = new XMFLOAT3;
 
-	int n = 0;
-	fscanf(vtxt, "%i", &n);
+	char s[40];
 
-	SimpleVertex *vercicles = new SimpleVertex[n];
+	while (strcmp(s, "o"))
+		fscanf(vtxt, "%s", &s);
+
+	char objName[40];
+	fscanf(vtxt, "%s", &objName);
+
+	fscanf(vtxt, "%s", &s);
+	int i = 1;
+	while (!strcmp(s, "v"))
+	{
+		vert = (XMFLOAT3*)realloc((void*)vert, sizeof(XMFLOAT3) * i);
+		fscanf(vtxt, "%f%f%f", &vert[i - 1].x, &vert[i - 1].y, &vert[i - 1].z);
+		i++;
+		fscanf(vtxt, "%s", &s);
+	}
+	i = 1;
+	while (!strcmp(s, "vt"))
+	{
+		vtext = (XMFLOAT2*)realloc((void*)vtext, sizeof(XMFLOAT2) * i);
+		fscanf(vtxt, "%f%f", &vtext[i - 1].x, &vtext[i - 1].y);
+		i++;
+		fscanf(vtxt, "%s", &s);
+	}
+	i = 1;
+	while (!strcmp(s, "vn"))
+	{
+		vnorm = (XMFLOAT3*)realloc((void*)vnorm, sizeof(XMFLOAT3) * i);
+		fscanf(vtxt, "%f%f%f", &vnorm[i - 1].x, &vnorm[i - 1].y, &vnorm[i - 1].z);
+		i++;
+		fscanf(vtxt, "%s", &s);
+	}
+	while (strcmp(s,"off")) fscanf(vtxt, "%s", &s);
+	i = 3;
+	SimpleVertex* vercicles = new SimpleVertex;
+	fscanf(vtxt, "%s", &s);
+	while (!feof(vtxt) && !strcmp(s,"f"))
+	{
+		vercicles = (SimpleVertex*)realloc((void*)vercicles, sizeof(SimpleVertex) * i);
+		int x1, x2, x3;
+		int nx1, nx2, nx3;
+		int tx1, tx2, tx3;
+		
+		fscanf(vtxt, "%i/%i/%i  %i/%i/%i  %i/%i/%i", &x1, &tx1, &nx1, &x2, &tx2, &nx2, &x3, &tx3, &nx3);
+		vercicles[i - 3].Pos.x = vert[x1 - 1].x;
+		vercicles[i - 3].Pos.y = vert[x1 - 1].y;
+		vercicles[i - 3].Pos.z = vert[x1 - 1].z;
+		vercicles[i - 2].Pos.x = vert[x2 - 1].x;
+		vercicles[i - 2].Pos.y = vert[x2 - 1].y;
+		vercicles[i - 2].Pos.z = vert[x2 - 1].z;
+		vercicles[i - 1].Pos.x = vert[x3 - 1].x;
+		vercicles[i - 1].Pos.y = vert[x3 - 1].y;
+		vercicles[i - 1].Pos.z = vert[x3 - 1].z;
+
+		vercicles[i - 3].Normal.x = vnorm[nx1 - 1].x;
+		vercicles[i - 3].Normal.y = vnorm[nx1 - 1].y;
+		vercicles[i - 3].Normal.z = vnorm[nx1 - 1].z;
+		vercicles[i - 2].Normal.x = vnorm[nx2 - 1].x;
+		vercicles[i - 2].Normal.y = vnorm[nx2 - 1].y;
+		vercicles[i - 2].Normal.z = vnorm[nx2 - 1].z;
+		vercicles[i - 1].Normal.x = vnorm[nx3 - 1].x;
+		vercicles[i - 1].Normal.y = vnorm[nx3 - 1].y;
+		vercicles[i - 1].Normal.z = vnorm[nx3 - 1].z;
+
+		vercicles[i - 3].Tex.x = vtext[tx1 - 1].x;
+		vercicles[i - 3].Tex.y = vtext[tx1 - 1].y;
+
+		vercicles[i - 2].Tex.x = vtext[tx2 - 1].x;
+		vercicles[i - 2].Tex.y = vtext[tx2 - 1].y;
+
+		vercicles[i - 1].Tex.x = vtext[tx3 - 1].x;
+		vercicles[i - 1].Tex.y = vtext[tx3 - 1].y;
+		i += 3;
+		fscanf(vtxt, "%s", &s);
+
+	}
+	m = i-3;
+	/*int n = 0;
+	fscanf(vtxt, "%i", &n);*/
 
 
-
-	for (int i = 0; i < n; i++) //собственно заполняем структуру
+	
+	/*for (int i = 0; i < n; i++) //собственно заполн¤ем структуру
 	{
 		fscanf(vtxt, "%f", &vercicles[i].Pos.x);
 		fscanf(vtxt, "%f", &vercicles[i].Pos.y);
@@ -352,35 +432,37 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 		fscanf(vtxt, "%f", &vercicles[i].Normal.z);
 
 	}
-	
-	fscanf(vtxt, "%i",&m);
 
-	
-	WORD *indexes = new WORD[m];
+	fscanf(vtxt, "%i",&m);*/
+
+
+	WORD* indexes = new WORD[m];
 	//ZeroMemory(indexes, sizeof(WORD)*m);
-	for (int i = 0; i < m; i++)
+	/*for (int i = 0; i < m; i++)
 	{
 		fscanf(vtxt, "%i", &indexes[i]);
+	}*/
+	for (int k = 0; k < m; k++)
+	{
+		indexes[k] =k;
 	}
 
 
-	
-
-	D3D11_BUFFER_DESC bd; //cтруктурка описывающая наш буфер
+	D3D11_BUFFER_DESC bd; //cтруктурка описывающа¤ наш буфер
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SimpleVertex) * n; //размер буфера = размер одной вершины*т;
+	bd.ByteWidth = sizeof(SimpleVertex) * m; //размер буфера = размер одной вершины*т;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
-	D3D11_SUBRESOURCE_DATA InitData; // структура, содержащая данные буфера;
+	D3D11_SUBRESOURCE_DATA InitData; // структура, содержаща¤ данные буфера;
 	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem =vercicles; // указатель на наши вершины;
+	InitData.pSysMem = vercicles; // указатель на наши вершины;
 
-								  //Создаем объект буффера вершин ID3D11Buffer
+								  //—оздаем объект буффера вершин ID3D11Buffer
 	hr = g_pd3device->CreateBuffer(&bd, &InitData, &pVertexBuffer);
 	if (FAILED(hr))
 		return;
-	
+
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(WORD) * m; //6 треугольников 18 вершин 6*3
@@ -388,15 +470,18 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 	bd.CPUAccessFlags = 0;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = indexes;
-	//Создаем глобальный объект буфера индекссов
+	//—оздаем глобальный объект буфера индекссов
 	hr = g_pd3device->CreateBuffer(&bd, &InitData, &pIndexBuffer);
 	if (FAILED(hr))
 		return;
 
-	
+
 	delete[]vercicles;
 	indexes = NULL;
 	delete[]indexes;
+	delete[]vert;
+	delete[]vnorm;
+	delete[]vtext;
 	id = OBJECT::current_id;
 	OBJECT::current_id++;
 	OBJECT::global_ids[id] = int(this);
@@ -407,13 +492,13 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // Задаем координаты
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // «адаем координаты
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	// Создаем интерфейс сэмпла текстурирования
+	// —оздаем интерфейс сэмпла текстурировани¤
 	hr = g_pd3device->CreateSamplerState(&sampDesc, &pSamplerLinear);
 
 }
@@ -429,8 +514,10 @@ void OBJECT::step()
 	*/
 	XMVECTOR vpmg = XMVectorSet(XMVectorGetX(D3DINIT::g_Eye), 0, XMVectorGetZ(D3DINIT::g_Eye), 0);
 	vpmg = XMVector3Normalize(vpmg);
-	float ang = acos(XMVectorGetX(vpmg));
-	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -ang;
+	float ang = acos(XMVectorGetX(vpmg))+XM_PIDIV2;
+	float k = XMVectorGetY(D3DINIT::g_Up);
+
+	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -  ang;
 
 	z += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * cos(ang - XM_PIDIV2): speed * cos(2*XM_PI-ang- XM_PIDIV2);
 	x += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * sin(ang - XM_PIDIV2): speed * sin(2*XM_PI-ang- XM_PIDIV2);

@@ -11,6 +11,7 @@
 #include <D3DX11async.h>
 #include <memory>
 #include <D3DX11tex.h>
+#include <fstream>
 #define WINDOW_HEIGHT 800 //размеры окна
 #define WINDOW_WIDTH 800
 #define BBP 16 //глубина цвета
@@ -86,6 +87,7 @@ class D3DINIT
 	
 public:
 	static XMVECTOR g_Eye;
+	static XMVECTOR g_Up; 
 	static float ViewDist;
 	D3DINIT(HWND mwh);
 	~D3DINIT();
@@ -105,7 +107,7 @@ private:
 	int GameSpeed = 1000 / 30;
 	 //откуда смотрим
 	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
-	XMVECTOR g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
+	 // Направление верха
 	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f);
 	float vertAng = 0;
 };
