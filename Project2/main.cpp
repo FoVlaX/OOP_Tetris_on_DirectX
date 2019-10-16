@@ -50,8 +50,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		return 0;
 	}
 	piramide.setname("piramide");
-	OBJECT golp("test2.obj", "tex1.dds", hr);
-	golp.x = 4;
+	OBJECT golp("test5.obj", "textureforship.png", hr);
+	golp.x = 8;
 	win.SetPlayer((OBJECT*)OBJECT::global_ids[0]);
 	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];
 	d3d.SetGameSpeed(120);
