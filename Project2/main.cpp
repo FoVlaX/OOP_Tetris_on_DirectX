@@ -41,7 +41,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	
 	bool dir = true;
 	HRESULT hr = S_OK;
-	OBJECT piramide("test6.obj", "test.dds",hr);
+	OBJECT piramide("test6.obj", "test.png",hr);
 	piramide.y = -1.0f;
 
 	server SRVR(hr);
@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		return 0;
 	}
 	piramide.setname("piramide");
-	OBJECT golp("test.obj", "tex1.dds", hr);
+	OBJECT golp("test2.obj", "tex1.dds", hr);
 	golp.x = 4;
 	win.SetPlayer((OBJECT*)OBJECT::global_ids[0]);
 	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];

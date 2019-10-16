@@ -402,13 +402,13 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 		vercicles[i - 1].Normal.z = vnorm[nx3 - 1].z;
 
 		vercicles[i - 3].Tex.x = vtext[tx1 - 1].x;
-		vercicles[i - 3].Tex.y = vtext[tx1 - 1].y;
+		vercicles[i - 3].Tex.y = -vtext[tx1 - 1].y;
 
 		vercicles[i - 2].Tex.x = vtext[tx2 - 1].x;
-		vercicles[i - 2].Tex.y = vtext[tx2 - 1].y;
+		vercicles[i - 2].Tex.y = -vtext[tx2 - 1].y;
 
 		vercicles[i - 1].Tex.x = vtext[tx3 - 1].x;
-		vercicles[i - 1].Tex.y = vtext[tx3 - 1].y;
+		vercicles[i - 1].Tex.y = -vtext[tx3 - 1].y;
 		i += 3;
 		fscanf(vtxt, "%s", &s);
 
