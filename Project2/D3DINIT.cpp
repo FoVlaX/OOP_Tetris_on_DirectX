@@ -4,7 +4,7 @@ using namespace std;
 int OBJECT::global_ids[100] = { 0 };
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
-float D3DINIT::ViewDist = 9.f;
+float D3DINIT::ViewDist = 16.f;
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 D3DINIT::D3DINIT(HWND mwh)
@@ -308,20 +308,19 @@ void D3DINIT::SetView(float angleY, float angleX)
 			helpXas = XMVector3Rotate(helpXas, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY)));
 			
 		}
-		g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(XMVectorGetX(helpXas)*sin(angleX), XMVectorGetY(helpXas) * sin(angleX), XMVectorGetZ(helpXas) * sin(angleX), cos(angleX)));
-		vertAng += angleX * 2;
+		if (!(vertAng + angleX * 2.1 > XM_PIDIV2&& vertAng + angleX * 2.1 < 3 * XM_PIDIV2))
+		{
+			vertAng += angleX * 2;
+
+			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(XMVectorGetX(helpXas) * sin(angleX), XMVectorGetY(helpXas) * sin(angleX), XMVectorGetZ(helpXas) * sin(angleX), cos(angleX)));
+		}
 		if (vertAng > 2 * XM_PI) vertAng -= 2 * XM_PI;
 		if (vertAng < 0) vertAng += 2 * XM_PI;
 	
 	}
-	if (vertAng > XM_PIDIV2&& vertAng < 3 * XM_PIDIV2)
-	{
-		g_Up = XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f);
-	}
-	else
-	{
-		g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	}
+
+	g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	
 	XMVECTOR Eye = D3DINIT::ViewDist*g_Eye+g_At;
 	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up);
 }
@@ -514,7 +513,7 @@ void OBJECT::step()
 	*/
 	XMVECTOR vpmg = XMVectorSet(XMVectorGetX(D3DINIT::g_Eye), 0, XMVectorGetZ(D3DINIT::g_Eye), 0);
 	vpmg = XMVector3Normalize(vpmg);
-	float ang = acos(XMVectorGetX(vpmg))+XM_PIDIV2;
+	float ang = acos(XMVectorGetX(vpmg));
 	float k = XMVectorGetY(D3DINIT::g_Up);
 
 	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -  ang;

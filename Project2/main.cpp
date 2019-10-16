@@ -41,7 +41,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	
 	bool dir = true;
 	HRESULT hr = S_OK;
-	OBJECT piramide("test3.obj", "tex1.dds",hr);
+	OBJECT piramide("test6.obj", "test.dds",hr);
 	piramide.y = -1.0f;
 
 	server SRVR(hr);
@@ -50,7 +50,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		return 0;
 	}
 	piramide.setname("piramide");
-
+	OBJECT golp("test.obj", "tex1.dds", hr);
+	golp.x = 4;
 	win.SetPlayer((OBJECT*)OBJECT::global_ids[0]);
 	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];
 	d3d.SetGameSpeed(120);
@@ -80,8 +81,10 @@ int WINAPI WinMain(HINSTANCE hinstance,
 				OBJECT::set_gg->y = mes.y;
 				OBJECT::set_gg->z = mes.z;
 			}
-			piramide.step();
+			piramide.xang += 0.02;
+			//piramide.step();
 			piramide.draw();
+			golp.draw();
 			d3d.RenderEnd();
 		}
 
