@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <Windows.h>
 #include <windowsx.h>
 #include "D3DINIT.h"
@@ -13,8 +13,8 @@ class WININIT
 	
 public:
 
-	WININIT(int WIDTH,int HEIGHT, HINSTANCE hinstance, HWND &hwnd); //окно
+	WININIT(int WIDTH,int HEIGHT, HINSTANCE hinstance, HWND &hwnd); //РѕРєРЅРѕ
 	~WININIT();
-	void SetPlayer(OBJECT * obj); //задать цель для камеры
+	void SetPlayer(OBJECT * obj); //Р·Р°РґР°С‚СЊ С†РµР»СЊ РґР»СЏ РєР°РјРµСЂС‹
 };
 

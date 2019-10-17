@@ -1,4 +1,4 @@
-#include "WININIT.h"
+п»ї#include "WININIT.h"
 
 
 
@@ -11,10 +11,10 @@ void WININIT::SetPlayer(OBJECT *obj)
  LRESULT CALLBACK WindowProc(HWND hwnd,
 	UINT msg,
 	WPARAM wparam,
-	LPARAM lparam)  //обработчик прерываний
+	LPARAM lparam)  //РѕР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№
 {
 	PAINTSTRUCT ps;
-	HDC hdc; //дескриптор контекста устройтсва
+	HDC hdc; //РґРµСЃРєСЂРёРїС‚РѕСЂ РєРѕРЅС‚РµРєСЃС‚Р° СѓСЃС‚СЂРѕР№С‚СЃРІР°
 	
 	switch (msg)
 	{
@@ -93,10 +93,10 @@ void WININIT::SetPlayer(OBJECT *obj)
  
 
 
-WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*идентификатор окно понадобиться для привязки устройста директХ к нему*/)
+WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РѕРєРЅРѕ РїРѕРЅР°РґРѕР±РёС‚СЊСЃСЏ РґР»СЏ РїСЂРёРІСЏР·РєРё СѓСЃС‚СЂРѕР№СЃС‚Р° РґРёСЂРµРєС‚РҐ Рє РЅРµРјСѓ*/)
 {
 
-	WNDCLASSEX winclass = { 0 }; //класс окна
+	WNDCLASSEX winclass = { 0 }; //РєР»Р°СЃСЃ РѕРєРЅР°
 
 	winclass.cbSize = sizeof(WNDCLASSEX);
 	winclass.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -111,7 +111,7 @@ WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*идентиф
 	winclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	winclass.lpszClassName = WINDOW_CLASS_NAME;
 	int y;
-	if (!(y = RegisterClassEx(&winclass))) //регистрируем класс окна
+	if (!(y = RegisterClassEx(&winclass))) //СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РєР»Р°СЃСЃ РѕРєРЅР°
 	{
 		hwnd = NULL;
 	}
@@ -128,7 +128,7 @@ WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*идентиф
 	{
 		hwnd = NULL;
 	}
-	//создаем окно
+	//СЃРѕР·РґР°РµРј РѕРєРЅРѕ
 }
 
 

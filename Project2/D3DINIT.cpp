@@ -1,7 +1,7 @@
-#include "D3DINIT.h"
+п»ї#include "D3DINIT.h"
 using namespace std;
 
-int OBJECT::global_ids[100] = { 0 }; //объявление глобальлных классовых переменных
+int OBJECT::global_ids[100] = { 0 }; //РѕР±СЉСЏРІР»РµРЅРёРµ РіР»РѕР±Р°Р»СЊР»РЅС‹С… РєР»Р°СЃСЃРѕРІС‹С… РїРµСЂРµРјРµРЅРЅС‹С…
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
 float D3DINIT::ViewDist = 16.f;
@@ -22,8 +22,8 @@ HRESULT D3DINIT::InitDevice()
 	HRESULT hr = S_OK;
 	RECT rc;
 	GetClientRect(main_window_handle, &rc);
-	UINT width = rc.right - rc.left; //получаем ширину
-	UINT height = rc.bottom - rc.top; // и высоту окна
+	UINT width = rc.right - rc.left; //РїРѕР»СѓС‡Р°РµРј С€РёСЂРёРЅСѓ
+	UINT height = rc.bottom - rc.top; // Рё РІС‹СЃРѕС‚Сѓ РѕРєРЅР°
 
 	UINT createDeviceFlags = 0;
 
@@ -33,8 +33,8 @@ HRESULT D3DINIT::InitDevice()
 		D3D_DRIVER_TYPE_WARP,
 		D3D_DRIVER_TYPE_REFERENCE,
 	};
-	UINT numDriverTypes = ARRAYSIZE(driverTypes); //создаем массив для проверки на хардварную обработку
-	//создаем список поддерживаемых версий директХ
+	UINT numDriverTypes = ARRAYSIZE(driverTypes); //СЃРѕР·РґР°РµРј РјР°СЃСЃРёРІ РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅР° С…Р°СЂРґРІР°СЂРЅСѓСЋ РѕР±СЂР°Р±РѕС‚РєСѓ
+	//СЃРѕР·РґР°РµРј СЃРїРёСЃРѕРє РїРѕРґРґРµСЂР¶РёРІР°РµРјС‹С… РІРµСЂСЃРёР№ РґРёСЂРµРєС‚РҐ
 
 	D3D_FEATURE_LEVEL featureLevels[] = {
 		D3D_FEATURE_LEVEL_11_0,
@@ -42,35 +42,35 @@ HRESULT D3DINIT::InitDevice()
 		D3D_FEATURE_LEVEL_10_0,
 	};
 	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
-	//Создание устройств директХ. Заполним структуру
-	// которая описывает свойства переднегобуфера и привязывает его к нашему окну
+	//РЎРѕР·РґР°РЅРёРµ СѓСЃС‚СЂРѕР№СЃС‚РІ РґРёСЂРµРєС‚РҐ. Р—Р°РїРѕР»РЅРёРј СЃС‚СЂСѓРєС‚СѓСЂСѓ
+	// РєРѕС‚РѕСЂР°СЏ РѕРїРёСЃС‹РІР°РµС‚ СЃРІРѕР№СЃС‚РІР° РїРµСЂРµРґРЅРµРіРѕР±СѓС„РµСЂР° Рё РїСЂРёРІСЏР·С‹РІР°РµС‚ РµРіРѕ Рє РЅР°С€РµРјСѓ РѕРєРЅСѓ
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1; //one back buffer
 	sd.BufferDesc.Width = width; //shirina bufera
 	sd.BufferDesc.Height = height; //visota buffera
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // ФОРМАТ ПИКСЕЛЯ В БУФЕРЕ
-	sd.BufferDesc.RefreshRate.Numerator = 75; // частота обновления экрана
+	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // Р¤РћР РњРђРў РџРРљРЎР•Р›РЇ Р’ Р‘РЈР¤Р•Р Р•
+	sd.BufferDesc.RefreshRate.Numerator = 75; // С‡Р°СЃС‚РѕС‚Р° РѕР±РЅРѕРІР»РµРЅРёСЏ СЌРєСЂР°РЅР°
 	sd.BufferDesc.RefreshRate.Denominator = 1;// 
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //НАЗНАЧЕНИЕ БУФЕРА - peredniu? БУФЕР
-	sd.OutputWindow = main_window_handle; //привязка к окну
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //РќРђР—РќРђР§Р•РќРР• Р‘РЈР¤Р•Р Рђ - peredniu? Р‘РЈР¤Р•Р 
+	sd.OutputWindow = main_window_handle; //РїСЂРёРІСЏР·РєР° Рє РѕРєРЅСѓ
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
-	sd.Windowed = TRUE; // оконный режим
+	sd.Windowed = TRUE; // РѕРєРѕРЅРЅС‹Р№ СЂРµР¶РёРј
 	//
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
 	{
 		g_drivertype = driverTypes[driverTypeIndex];
 		hr = D3D11CreateDeviceAndSwapChain(NULL, g_drivertype, NULL, createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION,
 			&sd, &g_pSwapChain, &g_pd3device, &g_featurelevel, &g_pImmediateContext);
-		if SUCCEEDED(hr) break; //если устройства созданы то выходим из цикла
+		if SUCCEEDED(hr) break; //РµСЃР»Рё СѓСЃС‚СЂРѕР№СЃС‚РІР° СЃРѕР·РґР°РЅС‹ С‚Рѕ РІС‹С…РѕРґРёРј РёР· С†РёРєР»Р°
 	}
 	if FAILED(hr)
 		return hr;
-	//создаем задний буфер в SDK
-	//RenderTargetOutput - это передний буфер, RenderTargetView - задний
+	//СЃРѕР·РґР°РµРј Р·Р°РґРЅРёР№ Р±СѓС„РµСЂ РІ SDK
+	//RenderTargetOutput - СЌС‚Рѕ РїРµСЂРµРґРЅРёР№ Р±СѓС„РµСЂ, RenderTargetView - Р·Р°РґРЅРёР№
 
-	ID3D11Texture2D* pBackBuffer = NULL;//объект текстур, т.е. область памяти которуюю можно юзать для расования как буфер глубин и как текстуру
+	ID3D11Texture2D* pBackBuffer = NULL;//РѕР±СЉРµРєС‚ С‚РµРєСЃС‚СѓСЂ, С‚.Рµ. РѕР±Р»Р°СЃС‚СЊ РїР°РјСЏС‚Рё РєРѕС‚РѕСЂСѓСЋСЋ РјРѕР¶РЅРѕ СЋР·Р°С‚СЊ РґР»СЏ СЂР°СЃРѕРІР°РЅРёСЏ РєР°Рє Р±СѓС„РµСЂ РіР»СѓР±РёРЅ Рё РєР°Рє С‚РµРєСЃС‚СѓСЂСѓ
 	hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID *)&pBackBuffer);
 	if FAILED(hr) 
 		return hr;
@@ -79,8 +79,8 @@ HRESULT D3DINIT::InitDevice()
 	if FAILED(hr)
 		return hr;
 
-	//Создаем буффер глубин
-	// Создаем текстуру описание буфера глубин
+	//РЎРѕР·РґР°РµРј Р±СѓС„С„РµСЂ РіР»СѓР±РёРЅ
+	// РЎРѕР·РґР°РµРј С‚РµРєСЃС‚СѓСЂСѓ РѕРїРёСЃР°РЅРёРµ Р±СѓС„РµСЂР° РіР»СѓР±РёРЅ
 
 	D3D11_TEXTURE2D_DESC descDepth;
 	ZeroMemory(&descDepth, sizeof(descDepth));
@@ -95,11 +95,11 @@ HRESULT D3DINIT::InitDevice()
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
-	//при помощи заполненной структуры описания созахдаем объект тектуры
+	//РїСЂРё РїРѕРјРѕС‰Рё Р·Р°РїРѕР»РЅРµРЅРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂС‹ РѕРїРёСЃР°РЅРёСЏ СЃРѕР·Р°С…РґР°РµРј РѕР±СЉРµРєС‚ С‚РµРєС‚СѓСЂС‹
 	hr = g_pd3device->CreateTexture2D(&descDepth, NULL, &g_pDepthStencil);
 	if (FAILED(hr))
 		return hr;
-	//now создаем сам объект буффера глубин сначало как обычно стурктура с описынием
+	//now СЃРѕР·РґР°РµРј СЃР°Рј РѕР±СЉРµРєС‚ Р±СѓС„С„РµСЂР° РіР»СѓР±РёРЅ СЃРЅР°С‡Р°Р»Рѕ РєР°Рє РѕР±С‹С‡РЅРѕ СЃС‚СѓСЂРєС‚СѓСЂР° СЃ РѕРїРёСЃС‹РЅРёРµРј
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
 	ZeroMemory(&descDSV, sizeof(descDSV));
 	descDSV.Format = descDepth.Format;
@@ -108,10 +108,10 @@ HRESULT D3DINIT::InitDevice()
 	hr = g_pd3device->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
 	if (FAILED(hr))
 		return hr;
-	//теперь подключим к устройствву рисоваия сразу оба вида (глубин и задний буффер)
+	//С‚РµРїРµСЂСЊ РїРѕРґРєР»СЋС‡РёРј Рє СѓСЃС‚СЂРѕР№СЃС‚РІРІСѓ СЂРёСЃРѕРІР°РёСЏ СЃСЂР°Р·Сѓ РѕР±Р° РІРёРґР° (РіР»СѓР±РёРЅ Рё Р·Р°РґРЅРёР№ Р±СѓС„С„РµСЂ)
 	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
 
-	//настройка вьюпорта
+	//РЅР°СЃС‚СЂРѕР№РєР° РІСЊСЋРїРѕСЂС‚Р°
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)width;
 	vp.Height = (FLOAT)height;
@@ -119,14 +119,14 @@ HRESULT D3DINIT::InitDevice()
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
-	//подключаем вьюпорт к контексту устроства
+	//РїРѕРґРєР»СЋС‡Р°РµРј РІСЊСЋРїРѕСЂС‚ Рє РєРѕРЅС‚РµРєСЃС‚Сѓ СѓСЃС‚СЂРѕСЃС‚РІР°
 	g_pImmediateContext->RSSetViewports(1, &vp);
 	return S_OK;
 }
 
 void D3DINIT::CleanUpDevice()
 {
-	if (g_pImmediateContext) g_pImmediateContext->ClearState(); // чистим за собой
+	if (g_pImmediateContext) g_pImmediateContext->ClearState(); // С‡РёСЃС‚РёРј Р·Р° СЃРѕР±РѕР№
 	if (g_pRenderTargetView) g_pRenderTargetView->Release();
 	if (g_pConstantBuffer) g_pConstantBuffer->Release();
 	if (g_pIndexBuffer) g_pIndexBuffer->Release();
@@ -142,33 +142,33 @@ void D3DINIT::CleanUpDevice()
 void D3DINIT::RenderStart()
 {
 	float ClearColor[4] = { 0.5f,0.5f,0.6f,1.0f };
-	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //очищаем задний буфер
-	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
-	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
-	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //устанавливаем вершинный шейдер
-	g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //1 - точка входа в констант буффер в шейдере
-	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
+	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //РѕС‡РёС‰Р°РµРј Р·Р°РґРЅРёР№ Р±СѓС„РµСЂ
+	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //РѕС‡РёС‰Р°РµРј Р±СѓС„РµСЂ РіР»СѓР±РёРЅ
+	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРёРєСЃРµР»СЊРЅС‹Р№ С€РµР№РґРµСЂ
+	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІРµСЂС€РёРЅРЅС‹Р№ С€РµР№РґРµСЂ
+	g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //1 - С‚РѕС‡РєР° РІС…РѕРґР° РІ РєРѕРЅСЃС‚Р°РЅС‚ Р±СѓС„С„РµСЂ РІ С€РµР№РґРµСЂРµ
+	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //РїРµСЂРµРґР°РµРј РёРЅС„Сѓ Рѕ СЃРІРµС‚Рµ РІ РїРёРєСЃРµР»СЊРЅС‹Р№ Рё РІРµСЂС€РёРЅРЅС‹Р№ С€РµР№РґРµСЂС‹
 
 
 
 }
 
-void D3DINIT::SetGameSpeed(int spd) //spd  - кадров в секкунду;
+void D3DINIT::SetGameSpeed(int spd) //spd  - РєР°РґСЂРѕРІ РІ СЃРµРєРєСѓРЅРґСѓ;
 {
 	GameSpeed = 1000 / spd;
 }
 
 void D3DINIT::RenderEnd()
 {
-	g_pSwapChain->Present(0, 0); // копируем задний буфер вв передний собственно на экран
-	Sleep(GameSpeed); // задержка
+	g_pSwapChain->Present(0, 0); // РєРѕРїРёСЂСѓРµРј Р·Р°РґРЅРёР№ Р±СѓС„РµСЂ РІРІ РїРµСЂРµРґРЅРёР№ СЃРѕР±СЃС‚РІРµРЅРЅРѕ РЅР° СЌРєСЂР°РЅ
+	Sleep(GameSpeed); // Р·Р°РґРµСЂР¶РєР°
 }
 
-HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
+HRESULT D3DINIT::InitGeometry() //С€РµР№РґРµСЂС‹ Рё РєРѕРЅСЃС‚С‹РЅС‚РЅС‹Р№ Р±СѓС„С„РµСЂ
 {
 	HRESULT hr = S_OK;
-	//компиляция вершинного шейдера из файла
-	ID3DBlob* pVSBlob = NULL; //вспомогательный оъект просто место в оперативной памяти
+	//РєРѕРјРїРёР»СЏС†РёСЏ РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР° РёР· С„Р°Р№Р»Р°
+	ID3DBlob* pVSBlob = NULL; //РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РѕСЉРµРєС‚ РїСЂРѕСЃС‚Рѕ РјРµСЃС‚Рѕ РІ РѕРїРµСЂР°С‚РёРІРЅРѕР№ РїР°РјСЏС‚Рё
 	hr = CompileShaderFromFile("urok2.fx", "VS", "vs_5_0", &pVSBlob);
 	if (FAILED(hr))
 	{
@@ -183,7 +183,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
 		pVSBlob->Release();
 		return hr;
 	}
-	//определение шаблона вершин
+	//РѕРїСЂРµРґРµР»РµРЅРёРµ С€Р°Р±Р»РѕРЅР° РІРµСЂС€РёРЅ
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -191,14 +191,14 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
 		{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,20,D3D11_INPUT_PER_VERTEX_DATA,0},
 	};
 	UINT numElements = ARRAYSIZE(layout);
-	//создание шаблона вершин
+	//СЃРѕР·РґР°РЅРёРµ С€Р°Р±Р»РѕРЅР° РІРµСЂС€РёРЅ
 	hr = g_pd3device->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), &g_pVertexLayout);
 	pVSBlob->Release();
 	if (FAILED(hr))
 		return hr;
-	g_pImmediateContext->IASetInputLayout(g_pVertexLayout); //установка шаблона в устройство рисования
+	g_pImmediateContext->IASetInputLayout(g_pVertexLayout); //СѓСЃС‚Р°РЅРѕРІРєР° С€Р°Р±Р»РѕРЅР° РІ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ СЂРёСЃРѕРІР°РЅРёСЏ
 
-	ID3DBlob* pPSBlob = NULL; //вспомогательный оъект просто место в оперативной памяти
+	ID3DBlob* pPSBlob = NULL; //РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РѕСЉРµРєС‚ РїСЂРѕСЃС‚Рѕ РјРµСЃС‚Рѕ РІ РѕРїРµСЂР°С‚РёРІРЅРѕР№ РїР°РјСЏС‚Рё
 	hr = CompileShaderFromFile("urok2.fx", "PS", "ps_4_0", &pPSBlob);
 	if (FAILED(hr))
 	{
@@ -214,11 +214,11 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
 		return hr;
 	}
 
-	//создание буфера вершин
+	//СЃРѕР·РґР°РЅРёРµ Р±СѓС„РµСЂР° РІРµСЂС€РёРЅ
 	D3D11_BUFFER_DESC bd;
 	
 
-	//Создание константного буфера
+	//РЎРѕР·РґР°РЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚РЅРѕРіРѕ Р±СѓС„РµСЂР°
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(ConstantBuffer);
@@ -235,7 +235,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
 	hr = g_pd3device->CreateBuffer(&bd, NULL, &g_pConstantBufferLight);
 	if (FAILED(hr))
 		return hr;
-	//загрузка текстуры из файла
+	//Р·Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂС‹ РёР· С„Р°Р№Р»Р°
 
 
 	if (FAILED(hr)) return hr;
@@ -268,22 +268,22 @@ HRESULT D3DINIT::InitMatrixes()
 	GetClientRect(main_window_handle, &rc);
 	UINT width = rc.right - rc.left;
 	UINT height = rc.bottom - rc.top;
-	g_World = XMMatrixIdentity(); //инициализируем матрицу мира
-	// инициализируем матрицу вида
-	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -9.0f, 0.0f); //откуда смотрим
-	XMVECTOR At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
-	g_View = XMMatrixLookAtLH(Eye, At, Up); //матрица вида
+	g_World = XMMatrixIdentity(); //РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РјР°С‚СЂРёС†Сѓ РјРёСЂР°
+	// РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РјР°С‚СЂРёС†Сѓ РІРёРґР°
+	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -9.0f, 0.0f); //РѕС‚РєСѓРґР° СЃРјРѕС‚СЂРёРј
+	XMVECTOR At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //РљСѓРґР° СЃРјРѕС‚СЂРёРј
+	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // РќР°РїСЂР°РІР»РµРЅРёРµ РІРµСЂС…Р°
+	g_View = XMMatrixLookAtLH(Eye, At, Up); //РјР°С‚СЂРёС†Р° РІРёРґР°
 
-	//инициализация матрицы проекции
+	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РјР°С‚СЂРёС†С‹ РїСЂРѕРµРєС†РёРё
 	vLightDirs[0] = { -0.5f,0.5f,-0.5f,1.f };
 	vLightDirs[1] = { -0.5f,0.5f,-0.5f,1.f };
-	//это свет
+	//СЌС‚Рѕ СЃРІРµС‚
 	vLightColors[0] = { 0.8f,1.f,1.f,1.f };
 	vLightColors[1] = {0.8f, 1.f, 1.f, 1.f};
 
-	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f); //проекция на экран
-	ConstantBuffer cb; //обновим константные буферы
+	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f); //РїСЂРѕРµРєС†РёСЏ РЅР° СЌРєСЂР°РЅ
+	ConstantBuffer cb; //РѕР±РЅРѕРІРёРј РєРѕРЅСЃС‚Р°РЅС‚РЅС‹Рµ Р±СѓС„РµСЂС‹
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
@@ -300,36 +300,36 @@ HRESULT D3DINIT::InitMatrixes()
 
 void D3DINIT::SetView(float angleY, float angleX)
 {
-	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f); //получение положения объекта за которым закреплена камера
-	if (angleY != 0 || angleX !=0) //если есть изменения в координатах мыши
+	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f); //РїРѕР»СѓС‡РµРЅРёРµ РїРѕР»РѕР¶РµРЅРёСЏ РѕР±СЉРµРєС‚Р° Р·Р° РєРѕС‚РѕСЂС‹Рј Р·Р°РєСЂРµРїР»РµРЅР° РєР°РјРµСЂР°
+	if (angleY != 0 || angleX !=0) //РµСЃР»Рё РµСЃС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ РєРѕРѕСЂРґРёРЅР°С‚Р°С… РјС‹С€Рё
 	{
-		if (angleY != 0) { //вращение вокруг оси У т.е. смещение мыши по х
-			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY))); //поворот вектора направления на камеру вокруг вектора 0, 1, 0 т.е. оси У посредством задания кватериона вращения
-			helpXas = XMVector3Rotate(helpXas, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY))); //поворот вспомагательной горизонтальной оси на тот же угол вокруг оси У
+		if (angleY != 0) { //РІСЂР°С‰РµРЅРёРµ РІРѕРєСЂСѓРі РѕСЃРё РЈ С‚.Рµ. СЃРјРµС‰РµРЅРёРµ РјС‹С€Рё РїРѕ С…
+			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY))); //РїРѕРІРѕСЂРѕС‚ РІРµРєС‚РѕСЂР° РЅР°РїСЂР°РІР»РµРЅРёСЏ РЅР° РєР°РјРµСЂСѓ РІРѕРєСЂСѓРі РІРµРєС‚РѕСЂР° 0, 1, 0 С‚.Рµ. РѕСЃРё РЈ РїРѕСЃСЂРµРґСЃС‚РІРѕРј Р·Р°РґР°РЅРёСЏ РєРІР°С‚РµСЂРёРѕРЅР° РІСЂР°С‰РµРЅРёСЏ
+			helpXas = XMVector3Rotate(helpXas, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY))); //РїРѕРІРѕСЂРѕС‚ РІСЃРїРѕРјР°РіР°С‚РµР»СЊРЅРѕР№ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РѕСЃРё РЅР° С‚РѕС‚ Р¶Рµ СѓРіРѕР» РІРѕРєСЂСѓРі РѕСЃРё РЈ
 		}
-		if (!(vertAng + angleX * 2.1 > XM_PIDIV2&& vertAng + angleX * 2.1 < 3 * XM_PIDIV2)) //ограничение поворота по вертикали границы -пи/2 пи/2
+		if (!(vertAng + angleX * 2.1 > XM_PIDIV2&& vertAng + angleX * 2.1 < 3 * XM_PIDIV2)) //РѕРіСЂР°РЅРёС‡РµРЅРёРµ РїРѕРІРѕСЂРѕС‚Р° РїРѕ РІРµСЂС‚РёРєР°Р»Рё РіСЂР°РЅРёС†С‹ -РїРё/2 РїРё/2
 		{
-			vertAng += angleX * 2; //Поворот вокруг вспомогательной оси также задается кватерион вращения
+			vertAng += angleX * 2; //РџРѕРІРѕСЂРѕС‚ РІРѕРєСЂСѓРі РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕР№ РѕСЃРё С‚Р°РєР¶Рµ Р·Р°РґР°РµС‚СЃСЏ РєРІР°С‚РµСЂРёРѕРЅ РІСЂР°С‰РµРЅРёСЏ
 
-			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(XMVectorGetX(helpXas) * sin(angleX), XMVectorGetY(helpXas) * sin(angleX), XMVectorGetZ(helpXas) * sin(angleX), cos(angleX))); //врааащаем
+			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(XMVectorGetX(helpXas) * sin(angleX), XMVectorGetY(helpXas) * sin(angleX), XMVectorGetZ(helpXas) * sin(angleX), cos(angleX))); //РІСЂР°Р°Р°С‰Р°РµРј
 		}
 		if (vertAng > 2 * XM_PI) vertAng -= 2 * XM_PI;
-		if (vertAng < 0) vertAng += 2 * XM_PI; //если вдруг понадобится убрать ограничение
+		if (vertAng < 0) vertAng += 2 * XM_PI; //РµСЃР»Рё РІРґСЂСѓРі РїРѕРЅР°РґРѕР±РёС‚СЃСЏ СѓР±СЂР°С‚СЊ РѕРіСЂР°РЅРёС‡РµРЅРёРµ
 	
 	}
 
-	g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //задаем направление верха
+	g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //Р·Р°РґР°РµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РІРµСЂС…Р°
 	
 	XMVECTOR Eye = D3DINIT::ViewDist*g_Eye+g_At;
-	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up); //устанавливаем новой положение камеры а если точнее матрицы вида
+	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up); //СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅРѕРІРѕР№ РїРѕР»РѕР¶РµРЅРёРµ РєР°РјРµСЂС‹ Р° РµСЃР»Рё С‚РѕС‡РЅРµРµ РјР°С‚СЂРёС†С‹ РІРёРґР°
 }
 
-OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем из *.obj файла
+OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //С‡РёС‚Р°РµРј РёР· *.obj С„Р°Р№Р»Р°
 {
 
 	FILE* vtxt;
 
-	vtxt = fopen(vertxt, "r");// открываем наши фалйлы
+	vtxt = fopen(vertxt, "r");// РѕС‚РєСЂС‹РІР°РµРј РЅР°С€Рё С„Р°Р»Р№Р»С‹
 
 	XMFLOAT3* vert = new XMFLOAT3;
 	XMFLOAT2* vtext = new XMFLOAT2;
@@ -345,7 +345,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 
 	fscanf(vtxt, "%s", &s);
 	int i = 1;
-	while (!strcmp(s, "v")) // считываем координаты вершин
+	while (!strcmp(s, "v")) // СЃС‡РёС‚С‹РІР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РІРµСЂС€РёРЅ
 	{
 		vert = (XMFLOAT3*)realloc((void*)vert, sizeof(XMFLOAT3) * i);
 		fscanf(vtxt, "%f%f%f", &vert[i - 1].x, &vert[i - 1].y, &vert[i - 1].z);
@@ -353,7 +353,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 		fscanf(vtxt, "%s", &s);
 	}
 	i = 1;
-	while (!strcmp(s, "vt")) //считываем координаты текстур
+	while (!strcmp(s, "vt")) //СЃС‡РёС‚С‹РІР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚СѓСЂ
 	{
 		vtext = (XMFLOAT2*)realloc((void*)vtext, sizeof(XMFLOAT2) * i);
 		fscanf(vtxt, "%f%f", &vtext[i - 1].x, &vtext[i - 1].y);
@@ -361,7 +361,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 		fscanf(vtxt, "%s", &s);
 	}
 	i = 1;
-	while (!strcmp(s, "vn")) //считываем координаты нормалей
+	while (!strcmp(s, "vn")) //СЃС‡РёС‚С‹РІР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅРѕСЂРјР°Р»РµР№
 	{
 		vnorm = (XMFLOAT3*)realloc((void*)vnorm, sizeof(XMFLOAT3) * i);
 		fscanf(vtxt, "%f%f%f", &vnorm[i - 1].x, &vnorm[i - 1].y, &vnorm[i - 1].z);
@@ -372,7 +372,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 	i = 3;
 	SimpleVertex* vercicles = new SimpleVertex;
 	
-	while (!feof(vtxt) && !strcmp(s,"f")) //заполняем структуру для вершинного буфера
+	while (!feof(vtxt) && !strcmp(s,"f")) //Р·Р°РїРѕР»РЅСЏРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ РґР»СЏ РІРµСЂС€РёРЅРЅРѕРіРѕ Р±СѓС„РµСЂР°
 	{
 		vercicles = (SimpleVertex*)realloc((void*)vercicles, sizeof(SimpleVertex) * i);
 		int x1, x2, x3;
@@ -407,18 +407,18 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 		vercicles[i - 2].Tex.y = -vtext[tx2 - 1].y;
 
 		vercicles[i - 1].Tex.x = vtext[tx3 - 1].x;
-		vercicles[i - 1].Tex.y = -vtext[tx3 - 1].y;//одна поверхность за итерацию
+		vercicles[i - 1].Tex.y = -vtext[tx3 - 1].y;//РѕРґРЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ Р·Р° РёС‚РµСЂР°С†РёСЋ
 		i += 3;
 		fscanf(vtxt, "%s", &s);
 
 	}
-	m = i-3; //общее колво вертексов
+	m = i-3; //РѕР±С‰РµРµ РєРѕР»РІРѕ РІРµСЂС‚РµРєСЃРѕРІ
 	/*int n = 0;
 	fscanf(vtxt, "%i", &n);*/
 
 
 	
-	/*for (int i = 0; i < n; i++) //собственно заполн¤ем структуру
+	/*for (int i = 0; i < n; i++) //СЃРѕР±СЃС‚РІРµРЅРЅРѕ Р·Р°РїРѕР»РЅВ¤РµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ
 	{
 		fscanf(vtxt, "%f", &vercicles[i].Pos.x);
 		fscanf(vtxt, "%f", &vercicles[i].Pos.y);
@@ -434,7 +434,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 	fscanf(vtxt, "%i",&m);*/
 
 
-	WORD* indexes = new WORD[m]; // массив порядка отрисовки в данном случае числа от 0 до м-1
+	WORD* indexes = new WORD[m]; // РјР°СЃСЃРёРІ РїРѕСЂСЏРґРєР° РѕС‚СЂРёСЃРѕРІРєРё РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ С‡РёСЃР»Р° РѕС‚ 0 РґРѕ Рј-1
 	//ZeroMemory(indexes, sizeof(WORD)*m);
 	/*for (int i = 0; i < m; i++)
 	{
@@ -442,33 +442,33 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 	}*/
 	for (int k = 0; k < m; k++)
 	{
-		indexes[k] =k; //заполняем его
+		indexes[k] =k; //Р·Р°РїРѕР»РЅСЏРµРј РµРіРѕ
 	}
 
 
-	D3D11_BUFFER_DESC bd; //cтруктурка описывающа¤ наш буфер
+	D3D11_BUFFER_DESC bd; //cС‚СЂСѓРєС‚СѓСЂРєР° РѕРїРёСЃС‹РІР°СЋС‰Р°В¤ РЅР°С€ Р±СѓС„РµСЂ
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SimpleVertex) * m; //размер буфера = размер одной вершины*м;
+	bd.ByteWidth = sizeof(SimpleVertex) * m; //СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР° = СЂР°Р·РјРµСЂ РѕРґРЅРѕР№ РІРµСЂС€РёРЅС‹*Рј;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
-	D3D11_SUBRESOURCE_DATA InitData; // структура, содержаща¤ данные буфера;
+	D3D11_SUBRESOURCE_DATA InitData; // СЃС‚СЂСѓРєС‚СѓСЂР°, СЃРѕРґРµСЂР¶Р°С‰Р°В¤ РґР°РЅРЅС‹Рµ Р±СѓС„РµСЂР°;
 	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem = vercicles; // указатель на наши вершины;
+	InitData.pSysMem = vercicles; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С€Рё РІРµСЂС€РёРЅС‹;
 
-								  //—оздаем объект буффера вершин ID3D11Buffer
+								  //вЂ”РѕР·РґР°РµРј РѕР±СЉРµРєС‚ Р±СѓС„С„РµСЂР° РІРµСЂС€РёРЅ ID3D11Buffer
 	hr = g_pd3device->CreateBuffer(&bd, &InitData, &pVertexBuffer);
 	if (FAILED(hr))
 		return;
 
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(WORD) * m; //м треугольников 18 вершин 6*3
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER; //тип буфера - индексов
+	bd.ByteWidth = sizeof(WORD) * m; //Рј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ 18 РІРµСЂС€РёРЅ 6*3
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER; //С‚РёРї Р±СѓС„РµСЂР° - РёРЅРґРµРєСЃРѕРІ
 	bd.CPUAccessFlags = 0;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = indexes;
-	//—оздаем глобальный объект буфера индекссов
+	//вЂ”РѕР·РґР°РµРј РіР»РѕР±Р°Р»СЊРЅС‹Р№ РѕР±СЉРµРєС‚ Р±СѓС„РµСЂР° РёРЅРґРµРєСЃСЃРѕРІ
 	hr = g_pd3device->CreateBuffer(&bd, &InitData, &pIndexBuffer);
 	if (FAILED(hr))
 		return;
@@ -490,13 +490,13 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем и
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // задаем координаты
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // Р·Р°РґР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	// создаем интерфейс сэмпла текстурировани¤
+	// СЃРѕР·РґР°РµРј РёРЅС‚РµСЂС„РµР№СЃ СЃСЌРјРїР»Р° С‚РµРєСЃС‚СѓСЂРёСЂРѕРІР°РЅРёВ¤
 	hr = g_pd3device->CreateSamplerState(&sampDesc, &pSamplerLinear);
 
 }
@@ -510,14 +510,14 @@ void OBJECT::step()
 		yang += vyang;
 		zang += vzang;
 	*/
-	XMVECTOR vpmg = XMVectorSet(XMVectorGetX(D3DINIT::g_Eye), 0, XMVectorGetZ(D3DINIT::g_Eye), 0); //нормализуем проекцию вектора камеры на плосксть оХZ
-	vpmg = XMVector3Normalize(vpmg); //вот тут нормаизуем
-	float ang = acos(XMVectorGetX(vpmg)); // получаем угол по горизонтали
-	float k = XMVectorGetY(D3DINIT::g_Up); // направление верха  получаем
+	XMVECTOR vpmg = XMVectorSet(XMVectorGetX(D3DINIT::g_Eye), 0, XMVectorGetZ(D3DINIT::g_Eye), 0); //РЅРѕСЂРјР°Р»РёР·СѓРµРј РїСЂРѕРµРєС†РёСЋ РІРµРєС‚РѕСЂР° РєР°РјРµСЂС‹ РЅР° РїР»РѕСЃРєСЃС‚СЊ РѕРҐZ
+	vpmg = XMVector3Normalize(vpmg); //РІРѕС‚ С‚СѓС‚ РЅРѕСЂРјР°РёР·СѓРµРј
+	float ang = acos(XMVectorGetX(vpmg)); // РїРѕР»СѓС‡Р°РµРј СѓРіРѕР» РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+	float k = XMVectorGetY(D3DINIT::g_Up); // РЅР°РїСЂР°РІР»РµРЅРёРµ РІРµСЂС…Р°  РїРѕР»СѓС‡Р°РµРј
 
-	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -  ang; //разворачиваем оъект по направлению камеры по оси Y
+	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -  ang; //СЂР°Р·РІРѕСЂР°С‡РёРІР°РµРј РѕСЉРµРєС‚ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ РєР°РјРµСЂС‹ РїРѕ РѕСЃРё Y
 
-	z += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * cos(ang - XM_PIDIV2): speed * cos(2*XM_PI-ang- XM_PIDIV2); //перемещение по направлению камеры в плскости оXZ
+	z += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * cos(ang - XM_PIDIV2): speed * cos(2*XM_PI-ang- XM_PIDIV2); //РїРµСЂРµРјРµС‰РµРЅРёРµ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ РєР°РјРµСЂС‹ РІ РїР»СЃРєРѕСЃС‚Рё РѕXZ
 	x += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * sin(ang - XM_PIDIV2): speed * sin(2*XM_PI-ang- XM_PIDIV2);
 	
 }
@@ -535,23 +535,23 @@ void OBJECT::setname(const char* nm)
 
 void OBJECT::draw()
 {
-	// начиная отсюда в отрисовку бъекта
+	// РЅР°С‡РёРЅР°СЏ РѕС‚СЃСЋРґР° РІ РѕС‚СЂРёСЃРѕРІРєСѓ Р±СЉРµРєС‚Р°
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
 
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &pVertexBuffer, &stride, &offset); //в отрисовкку объекта пойдет это
-	//установка буфера индексов
+	g_pImmediateContext->IASetVertexBuffers(0, 1, &pVertexBuffer, &stride, &offset); //РІ РѕС‚СЂРёСЃРѕРІРєРєСѓ РѕР±СЉРµРєС‚Р° РїРѕР№РґРµС‚ СЌС‚Рѕ
+	//СѓСЃС‚Р°РЅРѕРІРєР° Р±СѓС„РµСЂР° РёРЅРґРµРєСЃРѕРІ
 	g_pImmediateContext->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	//установка способа отрисовки вершин в буфре
+	//СѓСЃС‚Р°РЅРѕРІРєР° СЃРїРѕСЃРѕР±Р° РѕС‚СЂРёСЃРѕРІРєРё РІРµСЂС€РёРЅ РІ Р±СѓС„СЂРµ
 	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
-	//ДАЛЕЕ ДЕЛАЕМ НЕООБХОДИМЫЕ МАТРИЧНЫЕ ТРАНСФОРМАЦИИ ДЛЯ ОТОБРАЖЕНИЯ ПОЛОЖЕНИЯ ОБЪЕКТА В МИРЕ
-	XMMATRIX mSpinY = XMMatrixRotationY(yang); //поворачиваем смещенную от центра пираамиду на угол -т ++ англе
+	//Р”РђР›Р•Р• Р”Р•Р›РђР•Рњ РќР•РћРћР‘РҐРћР”РРњР«Р• РњРђРўР РР§РќР«Р• РўР РђРќРЎР¤РћР РњРђР¦РР Р”Р›РЇ РћРўРћР‘Р РђР–Р•РќРРЇ РџРћР›РћР–Р•РќРРЇ РћР‘РЄР•РљРўРђ Р’ РњРР Р•
+	XMMATRIX mSpinY = XMMatrixRotationY(yang); //РїРѕРІРѕСЂР°С‡РёРІР°РµРј СЃРјРµС‰РµРЅРЅСѓСЋ РѕС‚ С†РµРЅС‚СЂР° РїРёСЂР°Р°РјРёРґСѓ РЅР° СѓРіРѕР» -С‚ ++ Р°РЅРіР»Рµ
 	XMMATRIX mSpinX = XMMatrixRotationX(xang);
-	XMMATRIX mSpinZ = XMMatrixRotationZ(zang);// вращаем пирамиду вокруг воей оси
-	XMMATRIX mTrans = XMMatrixTranslation(x, y, z); //смщаем пирамиду на -3 по оси х
-	XMMATRIX mScale = XMMatrixScaling(xs,ys,zs); //меняем маштаб пирамиды
+	XMMATRIX mSpinZ = XMMatrixRotationZ(zang);// РІСЂР°С‰Р°РµРј РїРёСЂР°РјРёРґСѓ РІРѕРєСЂСѓРі РІРѕРµР№ РѕСЃРё
+	XMMATRIX mTrans = XMMatrixTranslation(x, y, z); //СЃРјС‰Р°РµРј РїРёСЂР°РјРёРґСѓ РЅР° -3 РїРѕ РѕСЃРё С…
+	XMMATRIX mScale = XMMatrixScaling(xs,ys,zs); //РјРµРЅСЏРµРј РјР°С€С‚Р°Р± РїРёСЂР°РјРёРґС‹
 	g_World = mScale * mSpinY*mSpinX*mSpinZ*mTrans;
 	ConstantBuffer cb;
 	cb.mWorld = XMMatrixTranspose(g_World);
@@ -559,7 +559,7 @@ void OBJECT::draw()
 	cb.mProjection = XMMatrixTranspose(g_Projection);
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 	
-	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer); // 0 - точка входа в констант буффер в шейдере
+	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer); // 0 - С‚РѕС‡РєР° РІС…РѕРґР° РІ РєРѕРЅСЃС‚Р°РЅС‚ Р±СѓС„С„РµСЂ РІ С€РµР№РґРµСЂРµ
 	g_pImmediateContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 
 	g_pImmediateContext->PSSetShaderResources(0, 1, &pTextureRV);
