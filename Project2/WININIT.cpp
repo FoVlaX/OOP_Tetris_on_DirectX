@@ -11,7 +11,7 @@ void WININIT::SetPlayer(OBJECT *obj)
  LRESULT CALLBACK WindowProc(HWND hwnd,
 	UINT msg,
 	WPARAM wparam,
-	LPARAM lparam)
+	LPARAM lparam)  //обработчик прерываний
 {
 	PAINTSTRUCT ps;
 	HDC hdc; //дескриптор контекста устройтсва
@@ -93,10 +93,10 @@ void WININIT::SetPlayer(OBJECT *obj)
  
 
 
-WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd)
+WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*идентификатор окно понадобитьс€ дл€ прив€зки устройста директ’ к нему*/)
 {
 
-	WNDCLASSEX winclass = { 0 };
+	WNDCLASSEX winclass = { 0 }; //класс окна
 
 	winclass.cbSize = sizeof(WNDCLASSEX);
 	winclass.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -111,7 +111,7 @@ WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd)
 	winclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	winclass.lpszClassName = WINDOW_CLASS_NAME;
 	int y;
-	if (!(y = RegisterClassEx(&winclass)))
+	if (!(y = RegisterClassEx(&winclass))) //регистрируем класс окна
 	{
 		hwnd = NULL;
 	}
@@ -128,7 +128,7 @@ WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd)
 	{
 		hwnd = NULL;
 	}
-
+	//создаем окно
 }
 
 

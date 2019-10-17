@@ -1,7 +1,7 @@
 #include "D3DINIT.h"
 using namespace std;
 
-int OBJECT::global_ids[100] = { 0 };
+int OBJECT::global_ids[100] = { 0 }; //объявление глобальлных классовых переменных
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
 float D3DINIT::ViewDist = 16.f;
@@ -126,7 +126,7 @@ HRESULT D3DINIT::InitDevice()
 
 void D3DINIT::CleanUpDevice()
 {
-	if (g_pImmediateContext) g_pImmediateContext->ClearState();
+	if (g_pImmediateContext) g_pImmediateContext->ClearState(); // чистим за собой
 	if (g_pRenderTargetView) g_pRenderTargetView->Release();
 	if (g_pConstantBuffer) g_pConstantBuffer->Release();
 	if (g_pIndexBuffer) g_pIndexBuffer->Release();
@@ -142,12 +142,12 @@ void D3DINIT::CleanUpDevice()
 void D3DINIT::RenderStart()
 {
 	float ClearColor[4] = { 0.5f,0.5f,0.6f,1.0f };
-	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
-	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0);
-	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0);
+	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //очищаем задний буфер
+	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
+	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
+	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //устанавливаем вершинный шейдер
 	g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //1 - точка входа в констант буффер в шейдере
-	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight);
+	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
 
 
 
@@ -160,8 +160,8 @@ void D3DINIT::SetGameSpeed(int spd) //spd  - кадров в секкунду;
 
 void D3DINIT::RenderEnd()
 {
-	g_pSwapChain->Present(0, 0);
-	Sleep(GameSpeed);
+	g_pSwapChain->Present(0, 0); // копируем задний буфер вв передний собственно на экран
+	Sleep(GameSpeed); // задержка
 }
 
 HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
@@ -196,7 +196,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный буффер
 	pVSBlob->Release();
 	if (FAILED(hr))
 		return hr;
-	g_pImmediateContext->IASetInputLayout(g_pVertexLayout);
+	g_pImmediateContext->IASetInputLayout(g_pVertexLayout); //установка шаблона в устройство рисования
 
 	ID3DBlob* pPSBlob = NULL; //вспомогательный оъект просто место в оперативной памяти
 	hr = CompileShaderFromFile("urok2.fx", "PS", "ps_4_0", &pPSBlob);
@@ -273,17 +273,17 @@ HRESULT D3DINIT::InitMatrixes()
 	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -9.0f, 0.0f); //откуда смотрим
 	XMVECTOR At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
-	g_View = XMMatrixLookAtLH(Eye, At, Up);
+	g_View = XMMatrixLookAtLH(Eye, At, Up); //матрица вида
 
 	//инициализация матрицы проекции
 	vLightDirs[0] = { -0.5f,0.5f,-0.5f,1.f };
 	vLightDirs[1] = { -0.5f,0.5f,-0.5f,1.f };
-
+	//это свет
 	vLightColors[0] = { 0.8f,1.f,1.f,1.f };
 	vLightColors[1] = {0.8f, 1.f, 1.f, 1.f};
 
-	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
-	ConstantBuffer cb;
+	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f); //проекция на экран
+	ConstantBuffer cb; //обновим константные буферы
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
@@ -300,32 +300,31 @@ HRESULT D3DINIT::InitMatrixes()
 
 void D3DINIT::SetView(float angleY, float angleX)
 {
-	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f);
-	if (angleY != 0 || angleX !=0)
+	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f); //получение положения объекта за которым закреплена камера
+	if (angleY != 0 || angleX !=0) //если есть изменения в координатах мыши
 	{
-		if (angleY != 0) {
-			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY)));
-			helpXas = XMVector3Rotate(helpXas, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY)));
-			
+		if (angleY != 0) { //вращение вокруг оси У т.е. смещение мыши по х
+			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY))); //поворот вектора направления на камеру вокруг вектора 0, 1, 0 т.е. оси У посредством задания кватериона вращения
+			helpXas = XMVector3Rotate(helpXas, XMVectorSet(0.f, 1 * sin(angleY), 0.f, cos(angleY))); //поворот вспомагательной горизонтальной оси на тот же угол вокруг оси У
 		}
-		if (!(vertAng + angleX * 2.1 > XM_PIDIV2&& vertAng + angleX * 2.1 < 3 * XM_PIDIV2))
+		if (!(vertAng + angleX * 2.1 > XM_PIDIV2&& vertAng + angleX * 2.1 < 3 * XM_PIDIV2)) //ограничение поворота по вертикали границы -пи/2 пи/2
 		{
-			vertAng += angleX * 2;
+			vertAng += angleX * 2; //Поворот вокруг вспомогательной оси также задается кватерион вращения
 
-			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(XMVectorGetX(helpXas) * sin(angleX), XMVectorGetY(helpXas) * sin(angleX), XMVectorGetZ(helpXas) * sin(angleX), cos(angleX)));
+			g_Eye = XMVector3Rotate(g_Eye, XMVectorSet(XMVectorGetX(helpXas) * sin(angleX), XMVectorGetY(helpXas) * sin(angleX), XMVectorGetZ(helpXas) * sin(angleX), cos(angleX))); //врааащаем
 		}
 		if (vertAng > 2 * XM_PI) vertAng -= 2 * XM_PI;
-		if (vertAng < 0) vertAng += 2 * XM_PI;
+		if (vertAng < 0) vertAng += 2 * XM_PI; //если вдруг понадобится убрать ограничение
 	
 	}
 
-	g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //задаем направление верха
 	
 	XMVECTOR Eye = D3DINIT::ViewDist*g_Eye+g_At;
-	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up);
+	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up); //устанавливаем новой положение камеры а если точнее матрицы вида
 }
 
-OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
+OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем из *.obj файла
 {
 
 	FILE* vtxt;
@@ -346,7 +345,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 
 	fscanf(vtxt, "%s", &s);
 	int i = 1;
-	while (!strcmp(s, "v"))
+	while (!strcmp(s, "v")) // считываем координаты вершин
 	{
 		vert = (XMFLOAT3*)realloc((void*)vert, sizeof(XMFLOAT3) * i);
 		fscanf(vtxt, "%f%f%f", &vert[i - 1].x, &vert[i - 1].y, &vert[i - 1].z);
@@ -354,7 +353,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 		fscanf(vtxt, "%s", &s);
 	}
 	i = 1;
-	while (!strcmp(s, "vt"))
+	while (!strcmp(s, "vt")) //считываем координаты текстур
 	{
 		vtext = (XMFLOAT2*)realloc((void*)vtext, sizeof(XMFLOAT2) * i);
 		fscanf(vtxt, "%f%f", &vtext[i - 1].x, &vtext[i - 1].y);
@@ -362,18 +361,18 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 		fscanf(vtxt, "%s", &s);
 	}
 	i = 1;
-	while (!strcmp(s, "vn"))
+	while (!strcmp(s, "vn")) //считываем координаты нормалей
 	{
 		vnorm = (XMFLOAT3*)realloc((void*)vnorm, sizeof(XMFLOAT3) * i);
 		fscanf(vtxt, "%f%f%f", &vnorm[i - 1].x, &vnorm[i - 1].y, &vnorm[i - 1].z);
 		i++;
 		fscanf(vtxt, "%s", &s);
 	}
-	while (strcmp(s,"off")) fscanf(vtxt, "%s", &s);
+	while (strcmp(s,"f")) fscanf(vtxt, "%s", &s);
 	i = 3;
 	SimpleVertex* vercicles = new SimpleVertex;
-	fscanf(vtxt, "%s", &s);
-	while (!feof(vtxt) && !strcmp(s,"f"))
+	
+	while (!feof(vtxt) && !strcmp(s,"f")) //заполняем структуру для вершинного буфера
 	{
 		vercicles = (SimpleVertex*)realloc((void*)vercicles, sizeof(SimpleVertex) * i);
 		int x1, x2, x3;
@@ -384,7 +383,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 		vercicles[i - 3].Pos.x = vert[x1 - 1].x;
 		vercicles[i - 3].Pos.y = vert[x1 - 1].y;
 		vercicles[i - 3].Pos.z = vert[x1 - 1].z;
-		vercicles[i - 2].Pos.x = vert[x2 - 1].x;
+		vercicles[i - 2].Pos.x = vert[x2 - 1].x; 
 		vercicles[i - 2].Pos.y = vert[x2 - 1].y;
 		vercicles[i - 2].Pos.z = vert[x2 - 1].z;
 		vercicles[i - 1].Pos.x = vert[x3 - 1].x;
@@ -408,12 +407,12 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 		vercicles[i - 2].Tex.y = -vtext[tx2 - 1].y;
 
 		vercicles[i - 1].Tex.x = vtext[tx3 - 1].x;
-		vercicles[i - 1].Tex.y = -vtext[tx3 - 1].y;
+		vercicles[i - 1].Tex.y = -vtext[tx3 - 1].y;//одна поверхность за итерацию
 		i += 3;
 		fscanf(vtxt, "%s", &s);
 
 	}
-	m = i-3;
+	m = i-3; //общее колво вертексов
 	/*int n = 0;
 	fscanf(vtxt, "%i", &n);*/
 
@@ -435,7 +434,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 	fscanf(vtxt, "%i",&m);*/
 
 
-	WORD* indexes = new WORD[m];
+	WORD* indexes = new WORD[m]; // массив порядка отрисовки в данном случае числа от 0 до м-1
 	//ZeroMemory(indexes, sizeof(WORD)*m);
 	/*for (int i = 0; i < m; i++)
 	{
@@ -443,14 +442,14 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 	}*/
 	for (int k = 0; k < m; k++)
 	{
-		indexes[k] =k;
+		indexes[k] =k; //заполняем его
 	}
 
 
 	D3D11_BUFFER_DESC bd; //cтруктурка описывающа¤ наш буфер
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SimpleVertex) * m; //размер буфера = размер одной вершины*т;
+	bd.ByteWidth = sizeof(SimpleVertex) * m; //размер буфера = размер одной вершины*м;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA InitData; // структура, содержаща¤ данные буфера;
@@ -464,7 +463,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(WORD) * m; //6 треугольников 18 вершин 6*3
+	bd.ByteWidth = sizeof(WORD) * m; //м треугольников 18 вершин 6*3
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER; //тип буфера - индексов
 	bd.CPUAccessFlags = 0;
 	ZeroMemory(&InitData, sizeof(InitData));
@@ -491,34 +490,34 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr)
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // «адаем координаты
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // задаем координаты
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	// —оздаем интерфейс сэмпла текстурировани¤
+	// создаем интерфейс сэмпла текстурировани¤
 	hr = g_pd3device->CreateSamplerState(&sampDesc, &pSamplerLinear);
 
 }
 void OBJECT::step()
 {
 	/*
-	x += vx;
-	y += vy;
-	z += vz;
-	xang += vxang;
-	yang += vyang;
-	zang += vzang;
+		x += vx;
+		y += vy;
+		z += vz;
+		xang += vxang;
+		yang += vyang;
+		zang += vzang;
 	*/
-	XMVECTOR vpmg = XMVectorSet(XMVectorGetX(D3DINIT::g_Eye), 0, XMVectorGetZ(D3DINIT::g_Eye), 0);
-	vpmg = XMVector3Normalize(vpmg);
-	float ang = acos(XMVectorGetX(vpmg));
-	float k = XMVectorGetY(D3DINIT::g_Up);
+	XMVECTOR vpmg = XMVectorSet(XMVectorGetX(D3DINIT::g_Eye), 0, XMVectorGetZ(D3DINIT::g_Eye), 0); //нормализуем проекцию вектора камеры на плосксть оХZ
+	vpmg = XMVector3Normalize(vpmg); //вот тут нормаизуем
+	float ang = acos(XMVectorGetX(vpmg)); // получаем угол по горизонтали
+	float k = XMVectorGetY(D3DINIT::g_Up); // направление верха  получаем
 
-	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -  ang;
+	yang = XMVectorGetZ(D3DINIT::g_Eye) < 0 ? ang :  2*XM_PI -  ang; //разворачиваем оъект по направлению камеры по оси Y
 
-	z += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * cos(ang - XM_PIDIV2): speed * cos(2*XM_PI-ang- XM_PIDIV2);
+	z += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * cos(ang - XM_PIDIV2): speed * cos(2*XM_PI-ang- XM_PIDIV2); //перемещение по направлению камеры в плскости оXZ
 	x += XMVectorGetZ(D3DINIT::g_Eye) < 0 ? speed * sin(ang - XM_PIDIV2): speed * sin(2*XM_PI-ang- XM_PIDIV2);
 	
 }

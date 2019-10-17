@@ -13,8 +13,8 @@ class WININIT
 	
 public:
 
-	WININIT(int WIDTH,int HEIGHT, HINSTANCE hinstance, HWND &hwnd);
+	WININIT(int WIDTH,int HEIGHT, HINSTANCE hinstance, HWND &hwnd); //окно
 	~WININIT();
-	void SetPlayer(OBJECT * obj);
+	void SetPlayer(OBJECT * obj); //задать цель для камеры
 };
 

@@ -49,6 +49,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	{
 		return 0;
 	}
+
+
 	piramide.setname("piramide");
 	OBJECT golp("test5.obj", "textureforship.png", hr);
 	golp.x = 8;
@@ -81,7 +83,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 				OBJECT::set_gg->y = mes.y;
 				OBJECT::set_gg->z = mes.z;
 			}
-			piramide.xang += 0.02;
+			piramide.xang += 0.04;
 			//piramide.step();
 			piramide.draw();
 			golp.draw();

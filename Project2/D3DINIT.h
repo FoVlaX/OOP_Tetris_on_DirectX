@@ -108,8 +108,8 @@ private:
 	 //откуда смотрим
 	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	 // Направление верха
-	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f);
-	float vertAng = 0;
+	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f); // Горизонтальная ось вокруг которой вектор направления на кмеру вращается вверх вниз
+	float vertAng = 0; //вертикаьлный угол камеры
 };
 
 

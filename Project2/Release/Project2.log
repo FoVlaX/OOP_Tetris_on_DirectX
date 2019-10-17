@@ -113,9 +113,9 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathconvert.
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(518,43): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,40): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,51): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(74,14): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(75,15): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(84,25): warning C4305: +=: усечение из "double" в "float"
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(76,14): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(77,15): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(86,25): warning C4305: +=: усечение из "double" в "float"
   Создание кода
   1 of 93 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
