@@ -51,7 +51,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	}
 
 
-	piramide.setname("piramide");
+	piramide.setname("sword");
 	OBJECT golp("test5.obj", "textureforship.png", hr);
 	golp.x = 8;
 	win.SetPlayer((OBJECT*)OBJECT::global_ids[0]);

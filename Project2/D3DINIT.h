@@ -35,11 +35,11 @@ static ID3D11PixelShader *g_pPixelShader = NULL; // пиксельынй шей�
 static ID3D11InputLayout *g_pVertexLayout = NULL; // описание формата вершин
 static ID3D11Buffer *g_pVertexBuffer = NULL; // Буфер вершин
 static ID3D11Buffer *g_pIndexBuffer = NULL; //Буфер индексов вершин в каком порядке отрисовывать
-static ID3D11Buffer *g_pConstantBuffer = NULL; 
-static ID3D11Buffer* g_pConstantBufferLight = NULL; // Констатный буфер
+static ID3D11Buffer *g_pConstantBuffer = NULL; //matrixes
+static ID3D11Buffer* g_pConstantBufferLight = NULL; // Констатный буфер light
 static ID3D11Texture2D* g_pDepthStencil = NULL;
 static ID3D11DepthStencilView* g_pDepthStencilView = NULL;
-
+static ID3D11Buffer* g_pConstantBufferPointLight = NULL;
 
 
 static XMMATRIX g_World; //матрица мира00
@@ -80,6 +80,12 @@ struct ConstantBufferLight
 	XMFLOAT4 vLightDir[2];
 	XMFLOAT4 vLightColor[2];
 	XMFLOAT4 vOutputColor;
+};
+
+struct ConstantBufferPointLight
+{
+	XMFLOAT4 vPos;
+	XMFLOAT4 vLightPointColor;
 };
 
 class D3DINIT

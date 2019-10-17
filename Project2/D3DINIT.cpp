@@ -148,6 +148,8 @@ void D3DINIT::RenderStart()
 	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //устанавливаем вершинный шейдер
 	g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //1 - точка входа в констант буффер в шейдере
 	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
+	g_pImmediateContext->VSSetConstantBuffers(2, 1, &g_pConstantBufferPointLight); //1 - точка входа в констант буффер в шейдере
+	g_pImmediateContext->PSSetConstantBuffers(2, 1, &g_pConstantBufferPointLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
 
 
 
@@ -229,12 +231,19 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 		return hr;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(ConstantBuffer);
+	bd.ByteWidth = sizeof(ConstantBufferLight);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	hr = g_pd3device->CreateBuffer(&bd, NULL, &g_pConstantBufferLight);
 	if (FAILED(hr))
 		return hr;
+
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(ConstantBufferPointLight);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	hr = g_pd3device->CreateBuffer(&bd, NULL, &g_pConstantBufferPointLight);
 	//загрузка текстуры из файла
 
 
@@ -293,8 +302,15 @@ HRESULT D3DINIT::InitMatrixes()
 	cbl.vLightDir[0] = vLightDirs[0];
 	cbl.vLightDir[1] = vLightDirs[1];
 	cbl.vOutputColor = vOutputColor;
+
+	ConstantBufferPointLight cbpl;
+	cbpl.vPos = {2.f,3.f,0.f,7.f};
+	
+
+	cbpl.vLightPointColor = { 1.0f,1.f,0.9f,1.f };
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0);
+	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);
 	return S_OK;
 }
 
