@@ -221,6 +221,22 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 		return hr;
 	}
 
+
+	hr = CompileShaderFromFile("urok2.fx", "PSfL", "ps_4_0", &pPSBlob);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, "PS Don't compile file FX, Please, execute this porgram from directory with FX file", "ERROR", MB_OK);
+		return hr;
+	}
+
+	//Create Vertex SHader
+	hr = g_pd3device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &g_pPixelShaderLightO);
+	if (FAILED(hr))
+	{
+		pPSBlob->Release();
+		return hr;
+	}
+
 	//создание буфера вершин
 	D3D11_BUFFER_DESC bd;
 	
@@ -352,7 +368,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //чита
 	FILE* vtxt;
 
 	vtxt = fopen(vertxt, "r");// открываем наши фалйлы
-
+	lightOn = NULL;
 	XMFLOAT3* vert = new XMFLOAT3;
 	XMFLOAT2* vtext = new XMFLOAT2;
 	XMFLOAT3* vnorm = new XMFLOAT3;
@@ -555,6 +571,17 @@ void OBJECT::setname(const char* nm)
 	name = nm;
 }
 
+void OBJECT::drawall()
+{
+	OBJECT* o;
+	for (int i = 0; i < current_id; i++)
+	{
+		o = (OBJECT*)global_ids[i];
+		o->draw();
+	}
+	o = NULL;
+}
+
 void OBJECT::draw()
 {
 	// начиная отсюда в отрисовку бъекта
@@ -587,8 +614,22 @@ void OBJECT::draw()
 	g_pImmediateContext->PSSetShaderResources(0, 1, &pTextureRV);
 	g_pImmediateContext->PSSetSamplers(0, 1, &pSamplerLinear);
 
-	g_pImmediateContext->DrawIndexed(m, 0, 0);
+	if (lightOn)
+	{
+		if (lightOn->tl == pointLight)
+		{
+			lightOn->Pos.x = x;
+			lightOn->Pos.y = y;
+			lightOn->Pos.z = z;
+		}
+		g_pImmediateContext->PSSetShader(g_pPixelShaderLightO, NULL, 0);
+	}
 
+	g_pImmediateContext->DrawIndexed(m, 0, 0);
+	if (lightOn)
+	{
+		g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0);
+	}
 }
 
 

@@ -37,7 +37,7 @@ struct PS_INPUT
 };
 
 
-PS_INPUT VS( VS_INPUT input) 
+PS_INPUT VS(VS_INPUT input) 
 {
 	PS_INPUT output = (PS_INPUT)0;
 	output.Pos = mul( input.Pos, World );
@@ -61,7 +61,7 @@ float4 PS(PS_INPUT input) : SV_Target
 
 	for (int i = 0; i < (int)vOutputColor.y; i++) {
 		float R = vPos[i].a;
-		float3 vLightPointDir = (float3)input.PosX - (float3)vPos[i];
+		float3 vLightPointDir =  (float3)vPos[i] - (float3)input.PosX ;
 		float k = length(vLightPointDir);
 		if (k < R) {
 			k = 1 - k / R;
@@ -71,4 +71,9 @@ float4 PS(PS_INPUT input) : SV_Target
 	finalcolor *= txDiffuse.Sample(samLinear, input.Tex);
 	finalcolor.a = 1.f;
 	return finalcolor;
+}
+
+float4 PSfL(PS_INPUT input) : SV_Target
+{
+	return float4(1.f, 1.f, 1.f, 1.f);
 }

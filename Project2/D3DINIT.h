@@ -40,7 +40,7 @@ static ID3D11Buffer* g_pConstantBufferLight = NULL; // Констатный бу
 static ID3D11Texture2D* g_pDepthStencil = NULL;
 static ID3D11DepthStencilView* g_pDepthStencilView = NULL;
 static ID3D11Buffer* g_pConstantBufferPointLight = NULL;
-
+static ID3D11PixelShader* g_pPixelShaderLightO = NULL;
 
 static XMMATRIX g_World; //матрица мира00
 static XMMATRIX g_View; //матрциа вида
@@ -98,6 +98,7 @@ public:
 	static XMVECTOR g_Eye;
 	static XMVECTOR g_Up; 
 	static float ViewDist;
+	
 	D3DINIT(HWND mwh);
 	~D3DINIT();
 	HRESULT InitDevice();//инициализайция директХ
@@ -121,6 +122,27 @@ private:
 	float vertAng = 0; //вертикаьлный угол камеры
 };
 
+
+class LIGHT {
+
+public:
+	static int currentidP;
+	static int currentidN;
+	static int idsP[100];
+	static int idsN[100];
+	static void lightAll(); // перемещениие в структуры контантного буффер инфы о всех светах и обновление глобальных контантных буфферов
+	LIGHT(XMFLOAT4 PosP, XMFLOAT4 Color, typelight typeL);
+
+	XMFLOAT4 Pos; //позиция и Радиус в альфа канале для точечного
+	XMFLOAT4 Dir; //направление и интенсивность в альфа канале ля направенного света
+	XMFLOAT4 CurColor; //цвет света
+	void setLight(ConstantBufferLight& cbl, ConstantBufferPointLight& cbpl); // перемещение текущих данный о конкретном источники света в струкутру по конкретному ай ди
+	int id = 0; // ид текущего света
+	~LIGHT();
+	typelight tl;
+private:
+
+};
 
 
 class OBJECT
@@ -151,6 +173,7 @@ class OBJECT
 		float vyang = 0;
 		float vzang = 0;
 		///-----------------------------------------------------------------------------------------------------------
+		static void drawall();
 		void draw(); // функция которая передает буфферы устройству рисвания, переопределяет констатный буффер, выполняет неоюходимые матричные трансформации и отрисовывает данный объект в заднем буффере;
 		void step();
 		void setname(const char* nm);
@@ -158,6 +181,7 @@ class OBJECT
 		ID3D11Buffer *pIndexBuffer = NULL; // Буфер индексов
 		~OBJECT();
 		OBJECT* getadress();
+		LIGHT *lightOn;
 		float direction = 0;
 		float speed = 0;
 	private:
@@ -166,23 +190,3 @@ class OBJECT
 		
 };
 
-class LIGHT {
-
-public:
-	static int currentidP;
-	static int currentidN;
-	static int idsP[100];
-	static int idsN[100];
-	static void lightAll(); // перемещениие в структуры контантного буффер инфы о всех светах и обновление глобальных контантных буфферов
-	LIGHT(XMFLOAT4 PosP, XMFLOAT4 Color, typelight typeL);
-
-	XMFLOAT4 Pos ; //позиция и Радиус в альфа канале для точечного
-	XMFLOAT4 Dir ; //направление и интенсивность в альфа канале ля направенного света
-	XMFLOAT4 CurColor ; //цвет света
-	void setLight(ConstantBufferLight &cbl, ConstantBufferPointLight &cbpl); // перемещение текущих данный о конкретном источники света в струкутру по конкретному ай ди
-	int id = 0; // ид текущего света
-	~LIGHT();
-	typelight tl;
-private:
-
-};
