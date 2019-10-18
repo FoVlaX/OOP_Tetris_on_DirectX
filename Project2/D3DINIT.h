@@ -54,7 +54,7 @@ static XMFLOAT4 vLightColors[2];
 static XMFLOAT4 vOutputColor = { 0.2f,0.8f,0.9f,1.f}; //цвет выходной 
 static ID3D11ShaderResourceView* g_pTextureRV = NULL; //Объект текстуры
 static ID3D11SamplerState* g_pSamplerLinear = NULL; //параметры nalozheniya текстуры obrazec
-
+static enum typelight { normalLight, pointLight };
 
 static int setid = 0;
 
@@ -75,18 +75,21 @@ struct ConstantBuffer
 	
 };
 
-struct ConstantBufferLight
+static struct ConstantBufferLight
 {
-	XMFLOAT4 vLightDir[2];
-	XMFLOAT4 vLightColor[2];
-	XMFLOAT4 vOutputColor;
+	XMFLOAT4 vLightDir[100]; // в альфа канале будем хранить коэффициент яркости
+	XMFLOAT4 vLightColor[100];
+	XMFLOAT4 vOutputColor; // здесь запишем инфу о кол-во света 0 - кол-во направленного света, 1 - кол-во точечных источников света, 2 - кол-во конусных
 };
 
-struct ConstantBufferPointLight
+static struct ConstantBufferPointLight
 {
-	XMFLOAT4 vPos;
-	XMFLOAT4 vLightPointColor;
+	XMFLOAT4 vPos[100];
+	XMFLOAT4 vLightPointColor[100];
 };
+
+
+
 
 class D3DINIT
 {
@@ -163,3 +166,23 @@ class OBJECT
 		
 };
 
+class LIGHT {
+
+public:
+	static int currentidP;
+	static int currentidN;
+	static int idsP[100];
+	static int idsN[100];
+	static void lightAll(); // перемещениие в структуры контантного буффер инфы о всех светах и обновление глобальных контантных буфферов
+	LIGHT(XMFLOAT4 PosP, XMFLOAT4 Color, typelight typeL);
+
+	XMFLOAT4 Pos ; //позиция и Радиус в альфа канале для точечного
+	XMFLOAT4 Dir ; //направление и интенсивность в альфа канале ля направенного света
+	XMFLOAT4 CurColor ; //цвет света
+	void setLight(ConstantBufferLight &cbl, ConstantBufferPointLight &cbpl); // перемещение текущих данный о конкретном источники света в струкутру по конкретному ай ди
+	int id = 0; // ид текущего света
+	~LIGHT();
+	typelight tl;
+private:
+
+};

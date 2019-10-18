@@ -5,11 +5,18 @@ int OBJECT::global_ids[100] = { 0 }; //объявление глобальлны
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
 float D3DINIT::ViewDist = 16.f;
+
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+int LIGHT::currentidP = 0;
+int LIGHT::currentidN = 0;
+int LIGHT::idsP[100] = { 0 };
+int LIGHT::idsN[100] = { 0 };
 D3DINIT::D3DINIT(HWND mwh)
 {
 	main_window_handle = mwh;
+
 }
 
 
@@ -146,13 +153,11 @@ void D3DINIT::RenderStart()
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
 	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
 	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //устанавливаем вершинный шейдер
+	LIGHT::lightAll();
 	g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //1 - точка входа в констант буффер в шейдере
 	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
 	g_pImmediateContext->VSSetConstantBuffers(2, 1, &g_pConstantBufferPointLight); //1 - точка входа в констант буффер в шейдере
 	g_pImmediateContext->PSSetConstantBuffers(2, 1, &g_pConstantBufferPointLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
-
-
-
 }
 
 void D3DINIT::SetGameSpeed(int spd) //spd  - кадров в секкунду;
@@ -285,13 +290,14 @@ HRESULT D3DINIT::InitMatrixes()
 	g_View = XMMatrixLookAtLH(Eye, At, Up); //матрица вида
 
 	//инициализация матрицы проекции
-	vLightDirs[0] = { -0.5f,0.5f,-0.5f,1.f };
+	vLightDirs[0] = { -0.5f,0.5f,-0.5f,0.5f };
 	vLightDirs[1] = { -0.5f,0.5f,-0.5f,1.f };
 	//это свет
 	vLightColors[0] = { 0.8f,1.f,1.f,1.f };
 	vLightColors[1] = {0.8f, 1.f, 1.f, 1.f};
 
 	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f); //проекция на экран
+	/*
 	ConstantBuffer cb; //обновим константные буферы
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
@@ -301,16 +307,16 @@ HRESULT D3DINIT::InitMatrixes()
 	cbl.vLightColor[1] = vLightColors[1];
 	cbl.vLightDir[0] = vLightDirs[0];
 	cbl.vLightDir[1] = vLightDirs[1];
-	cbl.vOutputColor = vOutputColor;
+	cbl.vOutputColor = {1,1,0,0};
 
 	ConstantBufferPointLight cbpl;
-	cbpl.vPos = {2.f,3.f,0.f,7.f};
+	cbpl.vPos[0] = {2.f,3.f,0.f,7.f};
 	
 
-	cbpl.vLightPointColor = { 1.0f,1.f,0.9f,1.f };
+	cbpl.vLightPointColor[0] = { 1.0f,1.f,0.9f,1.f };
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0);
-	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);
+	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);*/
 	return S_OK;
 }
 
@@ -590,4 +596,69 @@ void OBJECT::draw()
 OBJECT::~OBJECT()
 {
 
+}
+
+void LIGHT::lightAll()
+{
+	LIGHT* o;
+
+	ConstantBufferLight cbl;
+	ConstantBufferPointLight cbpl;
+	for (int i = 0; i < currentidP; i++)
+	{
+		o = (LIGHT*)idsP[i];
+		o->setLight(cbl,cbpl);
+	}
+	for (int i = 0; i < currentidN; i++)
+	{
+		o = (LIGHT*)idsN[i];
+		o->setLight(cbl, cbpl);
+	}
+	cbl.vOutputColor = { (float)currentidN,(float)currentidP,0,0 };
+	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0);
+	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);
+	o = NULL;
+}
+
+LIGHT::LIGHT(XMFLOAT4 PosP,  XMFLOAT4 Color, typelight typeL)
+{
+	tl = typeL;
+	
+
+
+	if (tl == pointLight)
+	{
+		Pos = PosP;
+		CurColor = Color;
+		id = currentidP++;
+	
+		idsP[id] = (int)this;
+	}
+	if (tl == normalLight)
+	{
+		Dir = PosP;
+		CurColor = Color;
+		id = currentidN++;
+		
+		idsN[id] = (int)this;
+	}
+	
+}
+
+void LIGHT::setLight(ConstantBufferLight& cbl, ConstantBufferPointLight& cbpl)
+{
+	if (tl == pointLight)
+	{
+		cbpl.vPos[id] = Pos;
+		cbpl.vLightPointColor[id] = CurColor;
+	}
+	if (tl == normalLight)
+	{
+		cbl.vLightDir[id] = Dir;
+		cbl.vLightColor[id] = CurColor;
+	}
+}
+
+LIGHT::~LIGHT()
+{
 }

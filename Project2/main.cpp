@@ -58,6 +58,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	OBJECT *test = (OBJECT*)OBJECT::global_ids[0];
 	d3d.SetGameSpeed(120);
 	ShowCursor(FALSE);
+	LIGHT pointL({ 2.f,3.f,0.f,7.f }, { 1.0f,1.f,0.9f,1.f }, pointLight);
+	LIGHT normL({ -0.5f,0.5f,-0.5f,1.f }, { 1.0f,1.f,0.9f,1.f }, normalLight);
 	while (1)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -77,6 +79,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 			float ang2 = 0.3*(WINDOW_HEIGHT / 2 - p.y) * XM_PI / 180;
 			d3d.SetView(ang,ang2);
 			SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+			if (normL.Dir.w > 0) normL.Dir.w -= 0.001;
 			if (SRVR.recive(mes))
 			{
 				OBJECT::set_gg->x = mes.x;

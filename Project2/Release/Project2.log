@@ -1,4 +1,4 @@
-﻿  D3DINIT.cpp
+﻿  main.cpp
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\dxgitype.h(12,1): warning C4005: DXGI_STATUS_OCCLUDED: изменение макроопределения
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\winerror.h(55840): message : см. предыдущее определение "DXGI_STATUS_OCCLUDED"
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\dxgitype.h(13,1): warning C4005: DXGI_STATUS_CLIPPED: изменение макроопределения
@@ -113,9 +113,16 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathconvert.
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(518,43): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,40): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,51): warning C4838: преобразование из "unsigned int" в "INT" требует сужающего преобразования
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.h(57,50): warning C4091: static : пропускается слева от "typelight", когда ни одна переменная не объявлена
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.h(83,2): warning C4091: static : пропускается слева от "ConstantBufferLight", когда ни одна переменная не объявлена
+C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.h(89,2): warning C4091: static : пропускается слева от "ConstantBufferPointLight", когда ни одна переменная не объявлена
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(78,14): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(79,15): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(82,45): warning C4305: -=: усечение из "double" в "FLOAT"
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(89,25): warning C4305: +=: усечение из "double" в "float"
   Создание кода
-  1 of 94 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
+  1 of 98 functions ( 1.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Создание кода завершено
   Project2.vcxproj -> C:\Users\vlad\source\repos\Project2\Release\Project2.exe

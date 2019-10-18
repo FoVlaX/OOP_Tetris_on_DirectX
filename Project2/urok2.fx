@@ -10,14 +10,14 @@ cbuffer ConstantBuffer : register( b0 )
 
 cbuffer ConstantBufferPointLight : register ( b2 )
 {
-	float4 vPos;
-	float4 vLightPointColor;
+	float4 vPos[100];
+	float4 vLightPointColor[100];
 }
 
 cbuffer ConstantBufferLight : register( b1 )
 {
-	float4 vLightDir[2];
-	float4 vLightColor[2];
+	float4 vLightDir[100];
+	float4 vLightColor[100];
 	float4 vOutputColor;
 }
 
@@ -52,22 +52,22 @@ PS_INPUT VS( VS_INPUT input)
 float4 PS(PS_INPUT input) : SV_Target
 {
 	float4 finalcolor = 0.1f;
-	/*for (int i = 0; i < 1; i++)
+	for (int i = 0; i < (int)vOutputColor.x; i++)
 	{
-		finalcolor += saturate(dot((float3)vLightDir[i], input.Norm) * vLightColor[i]);
-	}*/
-	float R = vPos.a;
+		finalcolor += saturate(dot((float3)vLightDir[i], input.Norm) * vLightDir[i].a*vLightColor[i]);
+	}
+
 	
 
-
-	float3 vLightPointDir = (float3)input.PosX - (float3)vPos;
-	float k = length(vLightPointDir);
-	
-	if (k > R) k = R;
-	k = 1 -  k / R;
-	
-	finalcolor += saturate(dot(vLightPointDir, input.Norm) * k * vLightPointColor);
-
+	for (int i = 0; i < (int)vOutputColor.y; i++) {
+		float R = vPos[i].a;
+		float3 vLightPointDir = (float3)input.PosX - (float3)vPos[i];
+		float k = length(vLightPointDir);
+		if (k < R) {
+			k = 1 - k / R;
+			finalcolor += saturate(dot(vLightPointDir, input.Norm) * k * vLightPointColor[i]);
+		}
+	}
 	finalcolor *= txDiffuse.Sample(samLinear, input.Tex);
 	finalcolor.a = 1.f;
 	return finalcolor;
