@@ -312,7 +312,7 @@ HRESULT D3DINIT::InitMatrixes()
 	vLightColors[0] = { 0.8f,1.f,1.f,1.f };
 	vLightColors[1] = {0.8f, 1.f, 1.f, 1.f};
 
-	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f); //проекция на экран
+	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 500.0f); //проекция на экран
 	/*
 	ConstantBuffer cb; //обновим константные буферы
 	cb.mWorld = XMMatrixTranspose(g_World);
