@@ -1,10 +1,10 @@
 ﻿#include "D3DINIT.h"
 using namespace std;
 
-int OBJECT::global_ids[100] = { 0 }; //объявление глобальлных классовых переменных
+int OBJECT::global_ids[1000] = { 0 }; //объявление глобальлных классовых переменных
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
-float D3DINIT::ViewDist = 16.f;
+float D3DINIT::ViewDist = 45.f;
 
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -148,7 +148,7 @@ void D3DINIT::CleanUpDevice()
 
 void D3DINIT::RenderStart()
 {
-	float ClearColor[4] = { 0.5f,0.5f,0.6f,1.0f };
+	float ClearColor[4] = { 0.0f,0.0f,0.0f,1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //очищаем задний буфер
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
 	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
@@ -606,6 +606,9 @@ void OBJECT::draw()
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
+	cb.colorWhenNoLight = blend;
+	
+
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 	
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer); // 0 - точка входа в констант буффер в шейдере
@@ -656,6 +659,7 @@ void LIGHT::lightAll()
 		o->setLight(cbl, cbpl);
 	}
 	cbl.vOutputColor = { (float)currentidN,(float)currentidP,0,0 };
+
 	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0);
 	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);
 	o = NULL;

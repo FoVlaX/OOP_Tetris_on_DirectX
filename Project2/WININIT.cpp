@@ -117,7 +117,7 @@ WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*иде�
 	}
 	if (!(hwnd = CreateWindowEx(NULL,
 		WINDOW_CLASS_NAME,
-		"DirectX",
+		"SimpleGalaxy",
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		0, 0,
 		WIDTH, HEIGHT,

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include <windowsx.h>
@@ -12,6 +12,7 @@
 #include <memory>
 #include <D3DX11tex.h>
 #include <fstream>
+#include <vector>
 #define WINDOW_HEIGHT 800 //размеры окна
 #define WINDOW_WIDTH 800
 #define BBP 16 //глубина цвета
@@ -72,7 +73,7 @@ struct ConstantBuffer
 	XMMATRIX mWorld; //матрица мира
 	XMMATRIX mView; //марица вида
 	XMMATRIX mProjection; //матрица проекции
-	
+	XMFLOAT4 colorWhenNoLight;
 };
 
 static struct ConstantBufferLight
@@ -150,7 +151,7 @@ class OBJECT
 
 	public:
 		static OBJECT* set_gg;
-		static int global_ids[100];
+		static int global_ids[1000];
 		static int current_id;
 		OBJECT(char const* vertxt, char const* texture,HRESULT &hr); // загрузка из файла вершин и порядка их отрисовки
 		///-----------------------------------------------------------------------------------------------------------
@@ -184,6 +185,7 @@ class OBJECT
 		LIGHT *lightOn;
 		float direction = 0;
 		float speed = 0;
+		XMFLOAT4 blend;
 	private:
 		ID3D11ShaderResourceView* pTextureRV = NULL; //Объект текстуры
 		ID3D11SamplerState* pSamplerLinear = NULL; //параметры nalozheniya текстуры obrazec
