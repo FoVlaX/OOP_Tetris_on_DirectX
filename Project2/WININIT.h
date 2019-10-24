@@ -12,7 +12,7 @@ class WININIT
 {
 	
 public:
-
+	static bool mousepress;
 	WININIT(int WIDTH,int HEIGHT, HINSTANCE hinstance, HWND &hwnd); //окно
 	~WININIT();
 	void SetPlayer(OBJECT * obj); //задать цель для камеры

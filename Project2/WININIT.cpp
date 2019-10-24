@@ -1,6 +1,6 @@
 ﻿#include "WININIT.h"
 
-
+bool WININIT::mousepress = false;
 
 void WININIT::SetPlayer(OBJECT *obj)
 {
@@ -18,6 +18,14 @@ void WININIT::SetPlayer(OBJECT *obj)
 	
 	switch (msg)
 	{
+	case WM_LBUTTONDOWN:
+	{
+		WININIT::mousepress = true;
+	}break;
+	case WM_LBUTTONUP:
+	{
+		WININIT::mousepress = false;
+	}break;
 	case WM_KEYUP:
 	{
 	
@@ -67,11 +75,11 @@ void WININIT::SetPlayer(OBJECT *obj)
 	{
 		if (wparam == 4287102976)
 		{
-			D3DINIT::ViewDist += 0.4f;
+			D3DINIT::ViewDist += 0.8f;
 		}
 		else
 		{
-			D3DINIT::ViewDist -= 0.4f;
+			D3DINIT::ViewDist -= 0.8f;
 			
 		}
 
