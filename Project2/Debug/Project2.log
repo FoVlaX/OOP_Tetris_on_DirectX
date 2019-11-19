@@ -116,14 +116,28 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl
 C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.h(58,50): warning C4091: static : пропускается слева от "typelight", когда ни одна переменная не объявлена
 C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.h(84,2): warning C4091: static : пропускается слева от "ConstantBufferLight", когда ни одна переменная не объявлена
 C:\Users\vlad\source\repos\Project2\Project2\D3DINIT.h(90,2): warning C4091: static : пропускается слева от "ConstantBufferPointLight", когда ни одна переменная не объявлена
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(47,18): warning C4305: инициализация: усечение из "double" в "float"
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(57,55): warning C4244: =: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(58,55): warning C4244: =: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(59,42): warning C4244: =: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(60,22): warning C4305: =: усечение из "double" в "float"
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(61,22): warning C4305: =: усечение из "double" в "float"
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(62,22): warning C4305: =: усечение из "double" в "float"
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(96,14): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(97,15): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-C:\Users\vlad\source\repos\Project2\Project2\main.cpp(92,10): warning C4101: mes: неиспользованная локальная переменная
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(112,13): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(113,14): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(199,13): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(200,14): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(247,13): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(248,14): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(295,13): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(296,14): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(389,14): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(390,15): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(476,10): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(477,10): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(487,10): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(488,10): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(499,10): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(500,10): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(583,50): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(584,52): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(630,27): warning C4305: *=: усечение из "double" в "float"
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(631,27): warning C4305: *=: усечение из "double" в "float"
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(632,27): warning C4305: *=: усечение из "double" в "float"
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(640,27): warning C4305: /=: усечение из "double" в "float"
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(641,27): warning C4305: /=: усечение из "double" в "float"
+C:\Users\vlad\source\repos\Project2\Project2\main.cpp(642,27): warning C4305: /=: усечение из "double" в "float"
   Project2.vcxproj -> C:\Users\vlad\source\repos\Project2\Debug\Project2.exe

@@ -76,7 +76,7 @@ float4 PS(PS_INPUT input) : SV_Target
 
 	finalcolor *= txDiffuse.Sample(samLinear, input.Tex);
 	finalcolor *= blend;
-	finalcolor.a = 1.f;
+	finalcolor.a = blend.a;
 	return finalcolor;
 }
 

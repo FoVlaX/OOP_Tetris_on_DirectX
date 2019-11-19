@@ -159,6 +159,7 @@
     <ClCompile Include="WININIT.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="galaxycode.txt" />
     <Text Include="ind.txt" />
     <Text Include="urok2.fx" />
     <Text Include="ver.txt" />

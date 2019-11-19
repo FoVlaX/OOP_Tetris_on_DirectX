@@ -4,7 +4,7 @@ using namespace std;
 int OBJECT::global_ids[1000] = { 0 }; //объявление глобальлных классовых переменных
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
-float D3DINIT::ViewDist = 45.f;
+float D3DINIT::ViewDist =70.f;
 
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -16,7 +16,6 @@ int LIGHT::idsN[100] = { 0 };
 D3DINIT::D3DINIT(HWND mwh)
 {
 	main_window_handle = mwh;
-
 }
 
 
@@ -148,7 +147,7 @@ void D3DINIT::CleanUpDevice()
 
 void D3DINIT::RenderStart()
 {
-	float ClearColor[4] = { 0.0f,0.0f,0.0f,1.0f };
+	float ClearColor[4] = { 0.0f,0.0f,0.0f,1.f };
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //очищаем задний буфер
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
 	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
@@ -220,7 +219,6 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 		pPSBlob->Release();
 		return hr;
 	}
-
 
 	hr = CompileShaderFromFile("urok2.fx", "PSfL", "ps_4_0", &pPSBlob);
 	if (FAILED(hr))
@@ -313,26 +311,7 @@ HRESULT D3DINIT::InitMatrixes()
 	vLightColors[1] = {0.8f, 1.f, 1.f, 1.f};
 
 	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 500.0f); //проекция на экран
-	/*
-	ConstantBuffer cb; //обновим константные буферы
-	cb.mWorld = XMMatrixTranspose(g_World);
-	cb.mView = XMMatrixTranspose(g_View);
-	cb.mProjection = XMMatrixTranspose(g_Projection);
-	ConstantBufferLight cbl;
-	cbl.vLightColor[0] = vLightColors[0];
-	cbl.vLightColor[1] = vLightColors[1];
-	cbl.vLightDir[0] = vLightDirs[0];
-	cbl.vLightDir[1] = vLightDirs[1];
-	cbl.vOutputColor = {1,1,0,0};
 
-	ConstantBufferPointLight cbpl;
-	cbpl.vPos[0] = {2.f,3.f,0.f,7.f};
-	
-
-	cbpl.vLightPointColor[0] = { 1.0f,1.f,0.9f,1.f };
-	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
-	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0);
-	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);*/
 	return S_OK;
 }
 
@@ -413,11 +392,12 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //чита
 	while (!feof(vtxt) && !strcmp(s,"f")) //заполняем структуру для вершинного буфера
 	{
 		vercicles = (SimpleVertex*)realloc((void*)vercicles, sizeof(SimpleVertex) * i);
-		int x1, x2, x3;
-		int nx1, nx2, nx3;
-		int tx1, tx2, tx3;
+		int x1, x2, x3,x4;
+		int nx1, nx2, nx3, nx4;
+		int tx1, tx2, tx3, tx4;
 		
 		fscanf(vtxt, "%i/%i/%i  %i/%i/%i  %i/%i/%i", &x1, &tx1, &nx1, &x2, &tx2, &nx2, &x3, &tx3, &nx3);
+		
 		vercicles[i - 3].Pos.x = vert[x1 - 1].x;
 		vercicles[i - 3].Pos.y = vert[x1 - 1].y;
 		vercicles[i - 3].Pos.z = vert[x1 - 1].z;
@@ -447,7 +427,55 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //чита
 		vercicles[i - 1].Tex.x = vtext[tx3 - 1].x;
 		vercicles[i - 1].Tex.y = -vtext[tx3 - 1].y;//одна поверхность за итерацию
 		i += 3;
+		
+
 		fscanf(vtxt, "%s", &s);
+		if (strcmp(s, "f"))
+		{
+			if (strcmp(s, "s")) {
+				vercicles = (SimpleVertex*)realloc((void*)vercicles, sizeof(SimpleVertex) * i);
+
+				sscanf(s, "%i/%i/%i", &x4, &tx4, &nx4);
+
+				vercicles[i - 3].Pos.x = vert[x1 - 1].x;
+				vercicles[i - 3].Pos.y = vert[x1 - 1].y;
+				vercicles[i - 3].Pos.z = vert[x1 - 1].z;
+				vercicles[i - 2].Pos.x = vert[x3 - 1].x;
+				vercicles[i - 2].Pos.y = vert[x3 - 1].y;
+				vercicles[i - 2].Pos.z = vert[x3 - 1].z;
+				vercicles[i - 1].Pos.x = vert[x4 - 1].x;
+				vercicles[i - 1].Pos.y = vert[x4 - 1].y;
+				vercicles[i - 1].Pos.z = vert[x4 - 1].z;
+
+				vercicles[i - 3].Normal.x = vnorm[nx1 - 1].x;
+				vercicles[i - 3].Normal.y = vnorm[nx1 - 1].y;
+				vercicles[i - 3].Normal.z = vnorm[nx1 - 1].z;
+				vercicles[i - 2].Normal.x = vnorm[nx3 - 1].x;
+				vercicles[i - 2].Normal.y = vnorm[nx3 - 1].y;
+				vercicles[i - 2].Normal.z = vnorm[nx3 - 1].z;
+				vercicles[i - 1].Normal.x = vnorm[nx4 - 1].x;
+				vercicles[i - 1].Normal.y = vnorm[nx4 - 1].y;
+				vercicles[i - 1].Normal.z = vnorm[nx4 - 1].z;
+
+				vercicles[i - 3].Tex.x = vtext[tx1 - 1].x;
+				vercicles[i - 3].Tex.y = -vtext[tx1 - 1].y;
+
+				vercicles[i - 2].Tex.x = vtext[tx3 - 1].x;
+				vercicles[i - 2].Tex.y = -vtext[tx3 - 1].y;
+
+				vercicles[i - 1].Tex.x = vtext[tx4 - 1].x;  // 
+				vercicles[i - 1].Tex.y = -vtext[tx4 - 1].y;  // одна поверхность за итерацию
+				fscanf(vtxt, "%s", &s);
+				i += 3;
+			}
+			else
+			{
+				while (!feof(vtxt) && strcmp(s, "f")) {
+					fscanf(vtxt, "%s", &s);
+					if (!strcmp(s, "off")) break;
+				}
+			}
+		}
 
 	}
 	m = i-3; //общее колво вертексов
@@ -574,9 +602,9 @@ void OBJECT::setname(const char* nm)
 void OBJECT::drawall()
 {
 	OBJECT* o;
-	for (int i = 0; i < current_id; i++)
+	for (int i = 0; i < OBJECT::current_id; i++)
 	{
-		o = (OBJECT*)global_ids[i];
+		o = (OBJECT*)OBJECT::global_ids[i];
 		o->draw();
 	}
 	o = NULL;
@@ -639,7 +667,15 @@ void OBJECT::draw()
 
 OBJECT::~OBJECT()
 {
+	for (int i = id; i < OBJECT::current_id - 1; i++)
+	{
+		OBJECT::global_ids[i] = OBJECT::global_ids[i + 1];
+		OBJECT* a = (OBJECT*)OBJECT::global_ids[i];
+		a->id = i;
 
+	}
+	OBJECT::current_id--;
+	OBJECT::global_ids[OBJECT::current_id] = 0;
 }
 
 void LIGHT::lightAll()
@@ -706,4 +742,5 @@ void LIGHT::setLight(ConstantBufferLight& cbl, ConstantBufferPointLight& cbpl)
 
 LIGHT::~LIGHT()
 {
+
 }

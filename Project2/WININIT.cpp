@@ -21,10 +21,12 @@ void WININIT::SetPlayer(OBJECT *obj)
 	case WM_LBUTTONDOWN:
 	{
 		WININIT::mousepress = true;
+		ShowCursor(FALSE);
 	}break;
 	case WM_LBUTTONUP:
 	{
 		WININIT::mousepress = false;
+		ShowCursor(TRUE);
 	}break;
 	case WM_KEYUP:
 	{
