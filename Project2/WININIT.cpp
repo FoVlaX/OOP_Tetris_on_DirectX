@@ -30,7 +30,9 @@ void WININIT::SetPlayer(OBJECT *obj)
 	}break;
 	case WM_KEYUP:
 	{
-	
+		if (wparam == 16) { //enter
+			OBJECT::spd = 30;
+		}
 		if (wparam == 38) //up
 		{
 			OBJECT::set_gg->speed = 0.f;
@@ -51,10 +53,13 @@ void WININIT::SetPlayer(OBJECT *obj)
 	}break;
 	case WM_KEYDOWN:
 	{
-		if (wparam == 16) //shift
+		if (wparam == 27) //shift
 		{
 			AllocConsole();
 			PostQuitMessage(0);
+		}
+		if (wparam == 16) { //enter
+			OBJECT::spd = 4;
 		}
 		if (wparam == 37) //left
 		{
@@ -82,7 +87,6 @@ void WININIT::SetPlayer(OBJECT *obj)
 		else
 		{
 			D3DINIT::ViewDist -= 0.8f;
-			
 		}
 
 	}break;

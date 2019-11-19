@@ -151,6 +151,7 @@ class OBJECT
 
 	public:
 		static OBJECT* set_gg;
+		static int spd;
 		static int global_ids[1000];
 		static int current_id;
 		OBJECT(char const* vertxt, char const* texture,HRESULT &hr); // загрузка из файла вершин и порядка их отрисовки

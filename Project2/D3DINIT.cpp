@@ -8,7 +8,7 @@ float D3DINIT::ViewDist =70.f;
 
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
+int OBJECT::spd = 30;
 int LIGHT::currentidP = 0;
 int LIGHT::currentidN = 0;
 int LIGHT::idsP[100] = { 0 };

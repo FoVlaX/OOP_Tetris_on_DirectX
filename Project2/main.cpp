@@ -323,6 +323,23 @@ void CheckBlocks(int **mas,int step) {
 					delete o;
 					
 				}
+				for (int k = i; k >= 0; k--) {
+					if (k != 0) {
+						for (int j = 0; j < 9; j++) {
+							mas[k][j] = mas[k - 1][j];
+							OBJECT* o = (OBJECT*)mas[k][j];
+							if (o) {
+								o->y = 46 - k * 2;
+							}
+						}
+					}
+					else {
+						for (int j = 0; j < 9; j++) {
+							mas[k][j] = 0;
+						}
+					}
+				}
+				i++;
 			}
 			else
 			{
@@ -541,6 +558,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 
 	OBJECT* GameOver = NULL;
 	bool PulseUp = true;
+	int spd = 40;
 	while (1)
 	{
 		
@@ -595,8 +613,11 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		
 			OBJECT::drawall();
 			d3d.RenderEnd();
+
+			
+
 			if (!GMOVER) {
-				if (step > 20)
+				if (step > OBJECT::spd)
 				{
 					step = 0;
 					if (GetAsyncKeyState(VK_LEFT))
