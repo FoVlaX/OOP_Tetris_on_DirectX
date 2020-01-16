@@ -2,8 +2,9 @@
 #include "D3DINIT.h"
 #include "WININIT.h"
 #include "server.h"
-#include <iostream>
-
+//#include <iostream>
+#include <stdlib.h>
+#include <time.h>
 enum fgtype {rect,stick,g_o,t_o,g_o_r,z_o};
 
 struct figure {
@@ -11,6 +12,8 @@ struct figure {
 	int idsobj[4];
 	fgtype type;
 };
+
+const int timedel = 60;
 
 bool setfg(figure &fg, int **mas)
 {
@@ -223,8 +226,7 @@ bool moveright(figure& fg, int** mas)
 				}
 			}
 		}
-		else
-		{
+		else{
 			proov = false;
 			break;
 		}
@@ -300,7 +302,9 @@ bool moveleft(figure& fg, int** mas)
 }
 
 
-void CheckBlocks(int **mas,int step) {
+bool CheckBlocks(int **mas,int step) {
+	
+	bool proov = false;
 	for (int i = 22; i >= 0; i--)
 	{
 		bool tr = true;
@@ -314,7 +318,8 @@ void CheckBlocks(int **mas,int step) {
 		}
 		if (tr)
 		{
-			if (step == 20)
+			proov = true;
+			if (step >= timedel)
 			{
 				for (int j = 0; j < 9; j++)
 				{
@@ -346,12 +351,19 @@ void CheckBlocks(int **mas,int step) {
 				for (int j = 0; j < 9; j++)
 				{
 					OBJECT* o = (OBJECT*)mas[i][j];
-					o->blend = {0.9f,0.9f,0.9f,1.f};
-				
+					if (step % 10 > 5) {
+						o->blend = { 0.9f,0.9f,0.9f,1.f };
+					}
+					else {
+						o->blend = { 0.9f,0.0f,0.0f,1.f };
+					}
+					
 				}
 			}
 		}
 	}
+
+	return proov;
 
 }
 
@@ -372,6 +384,7 @@ void rotate(figure &fg, int** mas,int k)
 			newfg.coord[i].second = k * (fg.coord[i].first - c.first) + c.second;
 			newfg.coord[i].first = (-k) * (fg.coord[i].second - c.second) + c.first;
 		}
+
 		bool pr = true;
 
 		pr = canrot(newfg, mas);
@@ -417,7 +430,6 @@ void DeleteAllObj(int **mas){
 			if (mas[i][j] != 0) {
 				OBJECT* d = (OBJECT*)mas[i][j];
 				delete d;
-
 				mas[i][j] = 0;
 			}
 		}
@@ -428,13 +440,13 @@ OBJECT* CreatObjGameOver(){
 	HRESULT hr;
 	OBJECT *GameOver = new OBJECT("gameover.obj", "startex.dds", hr);
 	GameOver->z = -4;
-	GameOver->x = 0;
+	GameOver->x = 10;
 	GameOver->y = 20;
-	GameOver->blend = { 1.f,0.1f,0.1f,1.f };
+	GameOver->blend = { 1.f,0.1f,0.8f,1.f };
 	GameOver->xs = 4;
 	GameOver->ys = 4;
 	GameOver->zs = 4;
-	GameOver->xang = XM_PIDIV2;
+	GameOver->yang = 3*XM_PIDIV2;
 	return GameOver;
 }
 
@@ -445,7 +457,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 {
 	MSG msg;
 	HWND hwnd;
-	WININIT win(WINDOW_WIDTH, WINDOW_HEIGHT, hinstance, hwnd);
+	WININIT win(WINDOW_WIDTH, WINDOW_HEIGHT,"The Tetris", hinstance, hwnd);
 
 
 	if (hwnd == NULL)
@@ -485,7 +497,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	center.z = 4;
 	center.x = 10;
 	center.y = 20;
-	center.blend = { 0.f,0.f,0.f, 0.f };
+	center.blend = { 0.0f,0.6f,1.f,0.f };
 	for (int i = 0; i < 20; i++)
 	{
 		Wall[i] = (int)new OBJECT("test.obj", "startex.dds", hr);
@@ -559,6 +571,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	OBJECT* GameOver = NULL;
 	bool PulseUp = true;
 	int spd = 40;
+	bool DeleteBlocks = false;
+	srand(time(NULL));
 	while (1)
 	{
 		
@@ -617,8 +631,14 @@ int WINAPI WinMain(HINSTANCE hinstance,
 			
 
 			if (!GMOVER) {
-				if (step > OBJECT::spd)
+
+				
+
+				bool reason = step > OBJECT::spd;
+				if (DeleteBlocks) reason = step > timedel;
+				if ( reason )
 				{
+					if (DeleteBlocks) DeleteBlocks = false;
 					step = 0;
 					if (GetAsyncKeyState(VK_LEFT))
 					{
@@ -633,12 +653,24 @@ int WINAPI WinMain(HINSTANCE hinstance,
 						moveright(fg, field);
 					}
 					if (!movedown(fg, field)) {
-						CheckBlocks(field, 20);
-						if (!init(fg, field)) {
-							GMOVER = true;
+						DeleteBlocks = CheckBlocks(field, 0);
+						if (!DeleteBlocks) {
+							if (!init(fg, field)) {
+								GMOVER = true;
+							}
 						}
 					}
 
+				}
+				else {
+					if (DeleteBlocks) {
+						DeleteBlocks = CheckBlocks(field, step);
+						if (step == timedel) {
+							if (!init(fg, field)) {
+								GMOVER = true;
+							}
+						}
+					}
 				}
 				step++;
 			}

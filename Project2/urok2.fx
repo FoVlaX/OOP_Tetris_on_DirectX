@@ -52,7 +52,7 @@ PS_INPUT VS(VS_INPUT input)
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	float4 finalcolor = 0.1f;
+	float4 finalcolor = 0.35f;
 	if ((int)vOutputColor.x == 0 && (int)vOutputColor.y == 0) finalcolor = 1.f;
 	else
 	{
@@ -76,8 +76,9 @@ float4 PS(PS_INPUT input) : SV_Target
 
 	finalcolor *= txDiffuse.Sample(samLinear, input.Tex);
 	finalcolor *= blend;
-	finalcolor.a = blend.a;
+	finalcolor.a = 0.4f;
 	return finalcolor;
+	
 }
 
 float4 PSfL(PS_INPUT input) : SV_Target

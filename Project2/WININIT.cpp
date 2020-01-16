@@ -31,7 +31,7 @@ void WININIT::SetPlayer(OBJECT *obj)
 	case WM_KEYUP:
 	{
 		if (wparam == 16) { //enter
-			OBJECT::spd = 30;
+			OBJECT::spd = 25;
 		}
 		if (wparam == 38) //up
 		{
@@ -107,7 +107,7 @@ void WININIT::SetPlayer(OBJECT *obj)
  
 
 
-WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*идентификатор окно понадобиться для привязки устройста директХ к нему*/)
+WININIT::WININIT(int WIDTH, int HEIGHT,const char *caption, HINSTANCE hinstance, HWND &hwnd/*идентификатор окно понадобиться для привязки устройста директХ к нему*/)
 {
 
 	WNDCLASSEX winclass = { 0 }; //класс окна
@@ -131,7 +131,7 @@ WININIT::WININIT(int WIDTH, int HEIGHT, HINSTANCE hinstance, HWND &hwnd/*иде�
 	}
 	if (!(hwnd = CreateWindowEx(NULL,
 		WINDOW_CLASS_NAME,
-		"SimpleGalaxy",
+		caption,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		0, 0,
 		WIDTH, HEIGHT,

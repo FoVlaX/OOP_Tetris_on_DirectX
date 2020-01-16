@@ -8,7 +8,7 @@ float D3DINIT::ViewDist =70.f;
 
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-int OBJECT::spd = 30;
+int OBJECT::spd = 25;
 int LIGHT::currentidP = 0;
 int LIGHT::currentidN = 0;
 int LIGHT::idsP[100] = { 0 };
@@ -19,8 +19,8 @@ D3DINIT::D3DINIT(HWND mwh)
 }
 
 
-D3DINIT::~D3DINIT()
-{
+D3DINIT::~D3DINIT(){
+
 }
 
 HRESULT D3DINIT::InitDevice()
@@ -53,15 +53,15 @@ HRESULT D3DINIT::InitDevice()
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1; //one back buffer
-	sd.BufferDesc.Width = width; //shirina bufera
-	sd.BufferDesc.Height = height; //visota buffera
+	sd.BufferDesc.Width = width; //shirina_bufera
+	sd.BufferDesc.Height = height; //visota_buffera
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // ФОРМАТ ПИКСЕЛЯ В БУФЕРЕ
-	sd.BufferDesc.RefreshRate.Numerator = 75; // частота обновления экрана
+	sd.BufferDesc.RefreshRate.Numerator = 60; // частота обновления экрана
 	sd.BufferDesc.RefreshRate.Denominator = 1;// 
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //НАЗНАЧЕНИЕ БУФЕРА - peredniu? БУФЕР
 	sd.OutputWindow = main_window_handle; //привязка к окну
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
+	sd.SampleDesc.Count = 1.0f;
+	sd.SampleDesc.Quality = 0.3f;
 	sd.Windowed = TRUE; // оконный режим
 	//
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
@@ -69,18 +69,18 @@ HRESULT D3DINIT::InitDevice()
 		g_drivertype = driverTypes[driverTypeIndex];
 		hr = D3D11CreateDeviceAndSwapChain(NULL, g_drivertype, NULL, createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION,
 			&sd, &g_pSwapChain, &g_pd3device, &g_featurelevel, &g_pImmediateContext);
-		if SUCCEEDED(hr) break; //если устройства созданы то выходим из цикла
+		if SUCCEEDED(hr) break; //если устройства созданы, то выходим из цикла
 	}
 	if FAILED(hr)
 		return hr;
 	//создаем задний буфер в SDK
 	//RenderTargetOutput - это передний буфер, RenderTargetView - задний
 
-	ID3D11Texture2D* pBackBuffer = NULL;//объект текстур, т.е. область памяти которуюю можно юзать для расования как буфер глубин и как текстуру
+	ID3D11Texture2D* pBackBuffer = NULL;//объект текстур, т.е. область памяти которуюю можно юзать для рисования как буфер глубин и как текстуру
 	hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID *)&pBackBuffer);
 	if FAILED(hr) 
 		return hr;
-	hr = g_pd3device->CreateRenderTargetView(pBackBuffer, NULL, &g_pRenderTargetView);
+	hr = g_pd3device->CreateRenderTargetView(pBackBuffer, NULL , &g_pRenderTargetView);
 	pBackBuffer->Release();
 	if FAILED(hr)
 		return hr;
@@ -101,6 +101,7 @@ HRESULT D3DINIT::InitDevice()
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
+
 	//при помощи заполненной структуры описания созахдаем объект тектуры
 	hr = g_pd3device->CreateTexture2D(&descDepth, NULL, &g_pDepthStencil);
 	if (FAILED(hr))
@@ -110,6 +111,7 @@ HRESULT D3DINIT::InitDevice()
 	ZeroMemory(&descDSV, sizeof(descDSV));
 	descDSV.Format = descDepth.Format;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	
 	descDSV.Texture2D.MipSlice = 0;
 	hr = g_pd3device->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
 	if (FAILED(hr))
@@ -147,11 +149,12 @@ void D3DINIT::CleanUpDevice()
 
 void D3DINIT::RenderStart()
 {
-	float ClearColor[4] = { 0.0f,0.0f,0.0f,1.f };
+	float ClearColor[4] = { 0.0f,0.6f,1.f,1.f };
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //очищаем задний буфер
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
 	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
 	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //устанавливаем вершинный шейдер
+
 	LIGHT::lightAll();
 	g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //1 - точка входа в констант буффер в шейдере
 	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
@@ -192,9 +195,9 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 	//определение шаблона вершин
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
-		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,20,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"NORMAL", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,20,D3D11_INPUT_PER_VERTEX_DATA,0},
 	};
 	UINT numElements = ARRAYSIZE(layout);
 	//создание шаблона вершин
@@ -205,7 +208,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 	g_pImmediateContext->IASetInputLayout(g_pVertexLayout); //установка шаблона в устройство рисования
 
 	ID3DBlob* pPSBlob = NULL; //вспомогательный оъект просто место в оперативной памяти
-	hr = CompileShaderFromFile("urok2.fx", "PS", "ps_4_0", &pPSBlob);
+	hr = CompileShaderFromFile("urok2.fx", "PS", "ps_5_0", &pPSBlob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, "PS Don't compile file FX, Please, execute this porgram from directory with FX file", "ERROR", MB_OK);
@@ -555,7 +558,7 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //чита
 	//
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.Filter = D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // задаем координаты
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -592,6 +595,206 @@ void OBJECT::step()
 OBJECT* OBJECT::getadress()
 {
 	return this;
+}
+
+void OBJECT::ReloadModel(char const* vertxt, char const* texture)
+{
+	HRESULT hr;
+	FILE* vtxt;
+
+	vtxt = fopen(vertxt, "r");// открываем наши фалйлы
+	lightOn = NULL;
+	XMFLOAT3* vert = new XMFLOAT3;
+	XMFLOAT2* vtext = new XMFLOAT2;
+	XMFLOAT3* vnorm = new XMFLOAT3;
+
+	char s[40];
+
+	while (strcmp(s, "o"))
+		fscanf(vtxt, "%s", &s);
+
+	char objName[40];
+	fscanf(vtxt, "%s", &objName);
+
+	fscanf(vtxt, "%s", &s);
+	int i = 1;
+	while (!strcmp(s, "v")) // считываем координаты вершин
+	{
+		vert = (XMFLOAT3*)realloc((void*)vert, sizeof(XMFLOAT3) * i);
+		fscanf(vtxt, "%f%f%f", &vert[i - 1].x, &vert[i - 1].y, &vert[i - 1].z);
+		i++;
+		fscanf(vtxt, "%s", &s);
+	}
+	i = 1;
+	while (!strcmp(s, "vt")) //считываем координаты текстур
+	{
+		vtext = (XMFLOAT2*)realloc((void*)vtext, sizeof(XMFLOAT2) * i);
+		fscanf(vtxt, "%f%f", &vtext[i - 1].x, &vtext[i - 1].y);
+		i++;
+		fscanf(vtxt, "%s", &s);
+	}
+	i = 1;
+	while (!strcmp(s, "vn")) //считываем координаты нормалей
+	{
+		vnorm = (XMFLOAT3*)realloc((void*)vnorm, sizeof(XMFLOAT3) * i);
+		fscanf(vtxt, "%f%f%f", &vnorm[i - 1].x, &vnorm[i - 1].y, &vnorm[i - 1].z);
+		i++;
+		fscanf(vtxt, "%s", &s);
+	}
+	while (strcmp(s, "f")) fscanf(vtxt, "%s", &s);
+	i = 3;
+	SimpleVertex* vercicles = new SimpleVertex;
+
+	while (!feof(vtxt) && !strcmp(s, "f")) //заполняем структуру для вершинного буфера
+	{
+		vercicles = (SimpleVertex*)realloc((void*)vercicles, sizeof(SimpleVertex) * i);
+		int x1, x2, x3, x4;
+		int nx1, nx2, nx3, nx4;
+		int tx1, tx2, tx3, tx4;
+
+		fscanf(vtxt, "%i/%i/%i  %i/%i/%i  %i/%i/%i", &x1, &tx1, &nx1, &x2, &tx2, &nx2, &x3, &tx3, &nx3);
+
+		vercicles[i - 3].Pos.x = vert[x1 - 1].x;
+		vercicles[i - 3].Pos.y = vert[x1 - 1].y;
+		vercicles[i - 3].Pos.z = vert[x1 - 1].z;
+		vercicles[i - 2].Pos.x = vert[x2 - 1].x;
+		vercicles[i - 2].Pos.y = vert[x2 - 1].y;
+		vercicles[i - 2].Pos.z = vert[x2 - 1].z;
+		vercicles[i - 1].Pos.x = vert[x3 - 1].x;
+		vercicles[i - 1].Pos.y = vert[x3 - 1].y;
+		vercicles[i - 1].Pos.z = vert[x3 - 1].z;
+
+		vercicles[i - 3].Normal.x = vnorm[nx1 - 1].x;
+		vercicles[i - 3].Normal.y = vnorm[nx1 - 1].y;
+		vercicles[i - 3].Normal.z = vnorm[nx1 - 1].z;
+		vercicles[i - 2].Normal.x = vnorm[nx2 - 1].x;
+		vercicles[i - 2].Normal.y = vnorm[nx2 - 1].y;
+		vercicles[i - 2].Normal.z = vnorm[nx2 - 1].z;
+		vercicles[i - 1].Normal.x = vnorm[nx3 - 1].x;
+		vercicles[i - 1].Normal.y = vnorm[nx3 - 1].y;
+		vercicles[i - 1].Normal.z = vnorm[nx3 - 1].z;
+
+		vercicles[i - 3].Tex.x = vtext[tx1 - 1].x;
+		vercicles[i - 3].Tex.y = -vtext[tx1 - 1].y;
+
+		vercicles[i - 2].Tex.x = vtext[tx2 - 1].x;
+		vercicles[i - 2].Tex.y = -vtext[tx2 - 1].y;
+
+		vercicles[i - 1].Tex.x = vtext[tx3 - 1].x;
+		vercicles[i - 1].Tex.y = -vtext[tx3 - 1].y;//одна поверхность за итерацию
+		i += 3;
+
+
+		fscanf(vtxt, "%s", &s);
+		if (strcmp(s, "f"))
+		{
+			if (strcmp(s, "s")) {
+				vercicles = (SimpleVertex*)realloc((void*)vercicles, sizeof(SimpleVertex) * i);
+
+				sscanf(s, "%i/%i/%i", &x4, &tx4, &nx4);
+
+				vercicles[i - 3].Pos.x = vert[x1 - 1].x;
+				vercicles[i - 3].Pos.y = vert[x1 - 1].y;
+				vercicles[i - 3].Pos.z = vert[x1 - 1].z;
+				vercicles[i - 2].Pos.x = vert[x3 - 1].x;
+				vercicles[i - 2].Pos.y = vert[x3 - 1].y;
+				vercicles[i - 2].Pos.z = vert[x3 - 1].z;
+				vercicles[i - 1].Pos.x = vert[x4 - 1].x;
+				vercicles[i - 1].Pos.y = vert[x4 - 1].y;
+				vercicles[i - 1].Pos.z = vert[x4 - 1].z;
+
+				vercicles[i - 3].Normal.x = vnorm[nx1 - 1].x;
+				vercicles[i - 3].Normal.y = vnorm[nx1 - 1].y;
+				vercicles[i - 3].Normal.z = vnorm[nx1 - 1].z;
+				vercicles[i - 2].Normal.x = vnorm[nx3 - 1].x;
+				vercicles[i - 2].Normal.y = vnorm[nx3 - 1].y;
+				vercicles[i - 2].Normal.z = vnorm[nx3 - 1].z;
+				vercicles[i - 1].Normal.x = vnorm[nx4 - 1].x;
+				vercicles[i - 1].Normal.y = vnorm[nx4 - 1].y;
+				vercicles[i - 1].Normal.z = vnorm[nx4 - 1].z;
+
+				vercicles[i - 3].Tex.x = vtext[tx1 - 1].x;
+				vercicles[i - 3].Tex.y = -vtext[tx1 - 1].y;
+
+				vercicles[i - 2].Tex.x = vtext[tx3 - 1].x;
+				vercicles[i - 2].Tex.y = -vtext[tx3 - 1].y;
+
+				vercicles[i - 1].Tex.x = vtext[tx4 - 1].x;  // 
+				vercicles[i - 1].Tex.y = -vtext[tx4 - 1].y;  // одна поверхность за итерацию
+				fscanf(vtxt, "%s", &s);
+				i += 3;
+			}
+			else
+			{
+				while (!feof(vtxt) && strcmp(s, "f")) {
+					fscanf(vtxt, "%s", &s);
+					if (!strcmp(s, "off")) break;
+				}
+			}
+		}
+
+	}
+	m = i - 3; //общее колво вертексов
+	
+
+
+	WORD* indexes = new WORD[m]; 
+	for (int k = 0; k < m; k++)
+	{
+		indexes[k] = k; //заполняем его
+	}
+
+
+	D3D11_BUFFER_DESC bd; //cтруктурка описывающа¤ наш буфер
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(SimpleVertex) * m; //размер буфера = размер одной вершины*м;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+	D3D11_SUBRESOURCE_DATA InitData; // структура, содержаща¤ данные буфера;
+	ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = vercicles; // указатель на наши вершины;
+
+								  //—оздаем объект буффера вершин ID3D11Buffer
+	hr = g_pd3device->CreateBuffer(&bd, &InitData, &pVertexBuffer);
+	if (FAILED(hr))
+		return;
+
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(WORD) * m; //м треугольников 18 вершин 6*3
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER; //тип буфера - индексов
+	bd.CPUAccessFlags = 0;
+	ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = indexes;
+	//—оздаем глобальный объект буфера индекссов
+	hr = g_pd3device->CreateBuffer(&bd, &InitData, &pIndexBuffer);
+	if (FAILED(hr))
+		return;
+
+
+	delete[]vercicles;
+	indexes = NULL;
+	delete[]indexes;
+	delete[]vert;
+	delete[]vnorm;
+	delete[]vtext;
+	
+	fclose(vtxt);
+
+	hr = D3DX11CreateShaderResourceViewFromFile(g_pd3device, texture, NULL, NULL, &pTextureRV, NULL);
+	//
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;         // задаем координаты
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	// создаем интерфейс сэмпла текстурировани¤
+	hr = g_pd3device->CreateSamplerState(&sampDesc, &pSamplerLinear);
 }
 
 void OBJECT::setname(const char* nm)
@@ -642,7 +845,7 @@ void OBJECT::draw()
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer); // 0 - точка входа в констант буффер в шейдере
 	g_pImmediateContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 
-	g_pImmediateContext->PSSetShaderResources(0, 1, &pTextureRV);
+	g_pImmediateContext->PSSetShaderResources(0, 1, &pTextureRV); //передаем в шейдер текстуру в пиксельный
 	g_pImmediateContext->PSSetSamplers(0, 1, &pSamplerLinear);
 
 	if (lightOn)
@@ -696,7 +899,7 @@ void LIGHT::lightAll()
 	}
 	cbl.vOutputColor = { (float)currentidN,(float)currentidP,0,0 };
 
-	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0);
+	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0); //обновление констатных буфферов для дальнейшей передачи их в шейдеры
 	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);
 	o = NULL;
 }
@@ -742,5 +945,28 @@ void LIGHT::setLight(ConstantBufferLight& cbl, ConstantBufferPointLight& cbpl)
 
 LIGHT::~LIGHT()
 {
+	if (tl == pointLight){
+		for (int i = id; i < LIGHT::currentidP - 1; i++)
+		{
+			LIGHT::idsP[i] = LIGHT::idsP[i + 1];
+			LIGHT* a = (LIGHT*)LIGHT::idsP[i];
+			a->id = i;
+
+		}
+		LIGHT::currentidP--;
+		LIGHT::idsP[LIGHT::currentidP] = 0;
+	}
+
+	if (tl == normalLight) {
+		for (int i = id; i < LIGHT::currentidN - 1; i++)
+		{
+			LIGHT::idsN[i] = LIGHT::idsN[i + 1];
+			LIGHT* a = (LIGHT*)LIGHT::idsN[i];
+			a->id = i;
+
+		}
+		LIGHT::currentidN--;
+		LIGHT::idsN[LIGHT::currentidN] = 0;
+	}
 
 }

@@ -22,14 +22,14 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d11.lib")
 
-static float time = 0.0f;
+//static float time = 0.0f;
 static const int vCount = 60; // идентификатор окна
 static HINSTANCE main_instance = NULL;  // идентификатор приложения
 static D3D_DRIVER_TYPE g_drivertype = D3D_DRIVER_TYPE_NULL; //
 static D3D_FEATURE_LEVEL g_featurelevel = D3D_FEATURE_LEVEL_11_0; // версия  директХ поддерживаемая видеокартой
-static ID3D11Device *g_pd3device = NULL; // создание ресурсов (текстуры шейдеры, буферы 3-ч мерных объектов  и т.д.)
+static ID3D11Device *g_pd3device = NULL; // объект отвечающий создание ресурсов (текстуры шейдеры, буферы 3-ч мерных объектов  и т.д.)
 static ID3D11DeviceContext *g_pImmediateContext = NULL; // вывод графической информации
-static IDXGISwapChain *g_pSwapChain = NULL;  // работа с буфером рисования и вывод нарисованного на экран, должен содержать два буфера задний и передний (экран ) для корректной отрисвки без мельтешений
+static IDXGISwapChain *g_pSwapChain = NULL;  // работа с буфером рисования и вывод нарисованного на экран, должен содержать два буфера задний и передний (экран ) для корректной отрисвки без мельтешений, также переносит из заднего в передний уффер
 static ID3D11RenderTargetView *g_pRenderTargetView = NULL; // собственно задний буфер
 static ID3D11VertexShader *g_pVertexShader = NULL; //вершинный шейдер
 static ID3D11PixelShader *g_pPixelShader = NULL; // пиксельынй шейдер
@@ -38,9 +38,9 @@ static ID3D11Buffer *g_pVertexBuffer = NULL; // Буфер вершин
 static ID3D11Buffer *g_pIndexBuffer = NULL; //Буфер индексов вершин в каком порядке отрисовывать
 static ID3D11Buffer *g_pConstantBuffer = NULL; //matrixes
 static ID3D11Buffer* g_pConstantBufferLight = NULL; // Констатный буфер light
-static ID3D11Texture2D* g_pDepthStencil = NULL;
-static ID3D11DepthStencilView* g_pDepthStencilView = NULL;
-static ID3D11Buffer* g_pConstantBufferPointLight = NULL;
+static ID3D11Texture2D* g_pDepthStencil = NULL; //буфер глубин отвечает за то какой пиксель должен быть отрисован в зависимости от глубины объекта
+static ID3D11DepthStencilView* g_pDepthStencilView = NULL; //вид буффера глубин
+static ID3D11Buffer* g_pConstantBufferPointLight = NULL; //констатный буфер для данных точечного освещения
 static ID3D11PixelShader* g_pPixelShaderLightO = NULL;
 
 static XMMATRIX g_World; //матрица мира00
@@ -104,31 +104,32 @@ public:
 	~D3DINIT();
 	HRESULT InitDevice();//инициализайция директХ
 	void CleanUpDevice(); //удаление объектов Direct3D
-	void RenderStart();
-	void RenderEnd();//отрисовка 
+	void RenderStart();//начало отрисовки
+	//между этими функциями размещаются все операции с устройством рисования ImmedeateContext
+	void RenderEnd();//отрисовка перенос из заднего буфера в передний (на экран)
 	float ViewAngle = 0;
 	HRESULT InitMatrixes(); //Инициализация матриц
 	void SetView(float angleY,float angleX); // изменение матрицы мира
 	HRESULT InitGeometry();
 	HRESULT CompileShaderFromFile(LPCSTR szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
-	HWND main_window_handle;
+	HWND main_window_handle;//окно к которому будет привязаны объекты директх
 	
-	void SetGameSpeed(int spd);
+	void SetGameSpeed(int spd);//установка задержки, скорость игры
 private:
 	int GameSpeed = 1000 / 30;
 	 //откуда смотрим
 	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	 // Направление верха
 	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f); // Горизонтальная ось вокруг которой вектор направления на кмеру вращается вверх вниз
-	float vertAng = 0; //вертикаьлный угол камеры
+	float vertAng = 0; //вертикаьлный угол камеры //данные для настройки матрицы вида
 };
 
 
 class LIGHT {
 
 public:
-	static int currentidP;
-	static int currentidN;
+	static int currentidP; //текущее колво точеного света
+	static int currentidN; //текущее колво нормального света или номер id последущуего создаваемого света
 	static int idsP[100];
 	static int idsN[100];
 	static void lightAll(); // перемещениие в структуры контантного буффер инфы о всех светах и обновление глобальных контантных буфферов
@@ -187,6 +188,7 @@ class OBJECT
 		float direction = 0;
 		float speed = 0;
 		XMFLOAT4 blend;
+		void ReloadModel(char const* vertxt, char const* texture);
 	private:
 		ID3D11ShaderResourceView* pTextureRV = NULL; //Объект текстуры
 		ID3D11SamplerState* pSamplerLinear = NULL; //параметры nalozheniya текстуры obrazec
