@@ -455,10 +455,9 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	LPSTR lpcmdline,
 	int ncmdshow)
 {
-	MSG msg;
+	
 	HWND hwnd;
 	WININIT win(WINDOW_WIDTH, WINDOW_HEIGHT,"The Tetris", hinstance, hwnd);
-
 
 	if (hwnd == NULL)
 	{
@@ -468,36 +467,18 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	D3DINIT d3d(hwnd);
 	main_instance = hinstance;
 
-	if (FAILED(d3d.InitDevice()))
-	{
-		d3d.CleanUpDevice();
-		return 0;
-	}
-
-	if (FAILED(d3d.InitGeometry()))
-	{
-		d3d.CleanUpDevice();
-		return 0;
-	}
-
-	if (FAILED(d3d.InitMatrixes()))
-	{
-		d3d.CleanUpDevice();
+	if (!d3d.Initialization()) {
 		return 0;
 	}
 
 	bool dir = true;
 	HRESULT hr = S_OK;
 
-	LIGHT light({ -0.5f,-0.4f,-0.6f,1.f }, { 1.f,1.f,1.f,1.f }, normalLight);
+	LIGHT light({ -0.5f,1.4f,-0.6f,1.f }, { 1.f,1.f,1.f,1.f }, normalLight, {0.f,0.f,0.f,0.f});
 	int Wall[51];
 	int y = 40;
 	int x = -1;
-	OBJECT center("test.obj", "startex.dds", hr);
-	center.z = 4;
-	center.x = 10;
-	center.y = 20;
-	center.blend = { 0.0f,0.6f,1.f,0.f };
+
 	for (int i = 0; i < 20; i++)
 	{
 		Wall[i] = (int)new OBJECT("test.obj", "startex.dds", hr);
@@ -521,6 +502,14 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	y = 0;
 	x = -1;
 	
+	OBJECT *floor = new OBJECT("test.obj", "startex.dds", hr);
+
+	floor->xs = 40;
+	floor->zs = 40;
+	floor->ys = 0.5;
+	floor->blend = { 1.f,1.f,1.f,1.f };
+	floor->y = -1.5;
+	floor->x = 10;
 	for (int i = 40; i < 51; i++)
 	{
 		Wall[i] = (int)new OBJECT("test.obj", "startex.dds", hr);
@@ -544,13 +533,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	
 	figure fg;
 	init(fg, field);
-	
-
-	win.SetPlayer( &center);
-	d3d.SetGameSpeed(120);
-	ShowCursor(TRUE);
-
-	
+	d3d.SetViewPoint(10,20,4);
+	d3d.SetGameSpeed(120);	
 	if (FAILED(hr))
 	{
 		return 0;
@@ -573,66 +557,16 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	int spd = 40;
 	bool DeleteBlocks = false;
 	srand(time(NULL));
-	while (1)
-	{
-		
-		if (WININIT::mousepress)
-		{
-			ShowCursor(FALSE);
-			if (show)
-			{
-				SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-				show = !show;
-			}
-		}
-		else
-		{
-			if (!show)
-			{
-				show = !show;
-			}
-			ShowCursor(TRUE);
-		}
+	MSG msg;
 
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			if (msg.message == WM_QUIT)
-				break;
+	do{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)){
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		else
-		{	
-			
-			d3d.RenderStart();
-			POINT p;
-			GetCursorPos(&p);
-
-
-			//setcursor position if mousekey down
-			if (WININIT::mousepress)
-			{
-				ang = 0.3 * (WINDOW_WIDTH / 2 - p.x) * XM_PI / 180;
-				ang2 = 0.3 * (WINDOW_HEIGHT / 2 - p.y) * XM_PI / 180;
-			}
-
-			d3d.SetView(ang, ang2);
-
-			if (WININIT::mousepress)
-			{
-				SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-			}
-			//setcursor position if mousekey down
-
-		
-			OBJECT::drawall();
-			d3d.RenderEnd();
-
-			
-
+		else{	
+			d3d.Render();
 			if (!GMOVER) {
-
-				
 
 				bool reason = step > OBJECT::spd;
 				if (DeleteBlocks) reason = step > timedel;
@@ -710,8 +644,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 			}
 		}
 
-	}
-	d3d.CleanUpDevice();
+	} while (msg.message != WM_QUIT);//если получен сигнал  закрытия окна выйти из цикла
+
 	return 0;
 }
 

@@ -29,9 +29,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="urok2.fx">
-      <Filter>Исходные файлы</Filter>
-    </Text>
     <Text Include="ver.txt">
       <Filter>Исходные файлы</Filter>
     </Text>
@@ -52,5 +49,16 @@
     <ClInclude Include="server.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="depth.fx">
+      <Filter>Исходные файлы</Filter>
+    </FxCompile>
+    <FxCompile Include="shaderPS.fx">
+      <Filter>Исходные файлы</Filter>
+    </FxCompile>
+    <FxCompile Include="shaderVS.fx">
+      <Filter>Исходные файлы</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

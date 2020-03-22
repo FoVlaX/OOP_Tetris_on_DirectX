@@ -2,12 +2,6 @@
 
 bool WININIT::mousepress = false;
 
-void WININIT::SetPlayer(OBJECT *obj)
-{
-	OBJECT::set_gg = obj;
-	int h = 0;
-}
-
  LRESULT CALLBACK WindowProc(HWND hwnd,
 	UINT msg,
 	WPARAM wparam,
@@ -30,65 +24,15 @@ void WININIT::SetPlayer(OBJECT *obj)
 	}break;
 	case WM_KEYUP:
 	{
-		if (wparam == 16) { //enter
-			OBJECT::spd = 25;
-		}
-		if (wparam == 38) //up
-		{
-			OBJECT::set_gg->speed = 0.f;
-			
-		}
-		if (wparam == 40) //down
-		{
-			OBJECT::set_gg->speed = 0.f;
-		}
-		if (wparam == 37) //left
-		{
-			OBJECT::set_gg->vyang = 0.f;
-		}
-		if (wparam == 39) //right
-		{
-			OBJECT::set_gg->vyang = 0.f;
-		}
+		
 	}break;
 	case WM_KEYDOWN:
 	{
-		if (wparam == 27) //shift
-		{
-			AllocConsole();
-			PostQuitMessage(0);
-		}
-		if (wparam == 16) { //enter
-			OBJECT::spd = 4;
-		}
-		if (wparam == 37) //left
-		{
-			OBJECT::set_gg->vyang =-0.015f;
-		}
-		if (wparam == 39) //right
-		{
-			OBJECT::set_gg->vyang = 0.015f;
-		}
-		if (wparam == 38) //up
-		{
-			OBJECT::set_gg->speed = 0.09f;
-		}
-		if (wparam == 40) //down
-		{
-			OBJECT::set_gg->speed = -0.09f;
-		}
+		
 	}break;
 	case WM_MOUSEWHEEL:
 	{
-		if (wparam == 4287102976)
-		{
-			D3DINIT::ViewDist += 0.8f;
-		}
-		else
-		{
-			D3DINIT::ViewDist -= 0.8f;
-		}
-
+		
 	}break;
 	case WM_PAINT:
 	{

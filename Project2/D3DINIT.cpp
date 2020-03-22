@@ -20,7 +20,29 @@ D3DINIT::D3DINIT(HWND mwh)
 
 
 D3DINIT::~D3DINIT(){
+	CleanUpDevice();
+}
 
+bool D3DINIT::Initialization()
+{
+	if (FAILED(InitDevice()))
+	{
+		CleanUpDevice();
+		return 0;
+	}
+
+	if (FAILED(InitGeometry()))
+	{
+		CleanUpDevice();
+		return 0;
+	}
+
+	if (FAILED(InitMatrixes()))
+	{
+		CleanUpDevice();
+		return 0;
+	}
+	return true;
 }
 
 HRESULT D3DINIT::InitDevice()
@@ -152,10 +174,12 @@ void D3DINIT::RenderStart()
 	float ClearColor[4] = { 0.0f,0.6f,1.f,1.f };
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //очищаем задний буфер
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
-	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
-	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //устанавливаем вершинный шейдер
+
 
 	LIGHT::lightAll();
+
+	
+
 	g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //1 - точка входа в констант буффер в шейдере
 	g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pConstantBufferLight); //передаем инфу о свете в пиксельный и вершинный шейдеры
 	g_pImmediateContext->VSSetConstantBuffers(2, 1, &g_pConstantBufferPointLight); //1 - точка входа в констант буффер в шейдере
@@ -165,6 +189,11 @@ void D3DINIT::RenderStart()
 void D3DINIT::SetGameSpeed(int spd) //spd  - кадров в секкунду;
 {
 	GameSpeed = 1000 / spd;
+}
+
+void D3DINIT::SetViewPoint(float x, float y, float z)
+{
+	viewPoint = XMVectorSet(x, y, z, 0.0f);
 }
 
 void D3DINIT::RenderEnd()
@@ -178,7 +207,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 	HRESULT hr = S_OK;
 	//компиляция вершинного шейдера из файла
 	ID3DBlob* pVSBlob = NULL; //вспомогательный оъект просто место в оперативной памяти
-	hr = CompileShaderFromFile("urok2.fx", "VS", "vs_5_0", &pVSBlob);
+	hr = CompileShaderFromFile("shaderVS.fx", "VS", "vs_5_0", &pVSBlob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, "VS Don't compile file FX, Please, execute this porgram from directory with FX file", "ERROR", MB_OK);
@@ -192,6 +221,22 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 		pVSBlob->Release();
 		return hr;
 	}
+
+	hr = CompileShaderFromFile("depth.fx", "VS", "vs_5_0", &pVSBlob);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, "VS Don't compile file FX, Please, execute this porgram from directory with FX file", "ERROR", MB_OK);
+		return hr;
+	}
+
+	//Create Vertex SHader
+	hr = g_pd3device->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &g_pVertexShaderSM);
+	if (FAILED(hr))
+	{
+		pVSBlob->Release();
+		return hr;
+	}
+
 	//определение шаблона вершин
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -208,7 +253,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 	g_pImmediateContext->IASetInputLayout(g_pVertexLayout); //установка шаблона в устройство рисования
 
 	ID3DBlob* pPSBlob = NULL; //вспомогательный оъект просто место в оперативной памяти
-	hr = CompileShaderFromFile("urok2.fx", "PS", "ps_5_0", &pPSBlob);
+	hr = CompileShaderFromFile("shaderPS.fx", "PS", "ps_5_0", &pPSBlob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, "PS Don't compile file FX, Please, execute this porgram from directory with FX file", "ERROR", MB_OK);
@@ -223,7 +268,7 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 		return hr;
 	}
 
-	hr = CompileShaderFromFile("urok2.fx", "PSfL", "ps_4_0", &pPSBlob);
+	hr = CompileShaderFromFile("shaderPS.fx", "PSfL", "ps_4_0", &pPSBlob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, "PS Don't compile file FX, Please, execute this porgram from directory with FX file", "ERROR", MB_OK);
@@ -237,6 +282,22 @@ HRESULT D3DINIT::InitGeometry() //шейдеры и констынтный бу�
 		pPSBlob->Release();
 		return hr;
 	}
+
+	hr = CompileShaderFromFile("depth.fx", "PS", "ps_4_0", &pPSBlob);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, "PS Don't compile file FX, Please, execute this porgram from directory with FX file", "ERROR", MB_OK);
+		return hr;
+	}
+
+	//Create Vertex SHader
+	hr = g_pd3device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &g_pPixelShaderSM);
+	if (FAILED(hr))
+	{
+		pPSBlob->Release();
+		return hr;
+	}
+
 
 	//создание буфера вершин
 	D3D11_BUFFER_DESC bd;
@@ -301,7 +362,7 @@ HRESULT D3DINIT::InitMatrixes()
 	UINT height = rc.bottom - rc.top;
 	g_World = XMMatrixIdentity(); //инициализируем матрицу мира
 	// инициализируем матрицу вида
-	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -9.0f, 0.0f); //откуда смотрим
+	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -70.0f, 0.0f); //откуда смотрим
 	XMVECTOR At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Направление верха
 	g_View = XMMatrixLookAtLH(Eye, At, Up); //матрица вида
@@ -313,14 +374,19 @@ HRESULT D3DINIT::InitMatrixes()
 	vLightColors[0] = { 0.8f,1.f,1.f,1.f };
 	vLightColors[1] = {0.8f, 1.f, 1.f, 1.f};
 
-	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 500.0f); //проекция на экран
+	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, width / (FLOAT)height, 0.01f, 500.0f); //проекция на экран
 
 	return S_OK;
 }
 
 void D3DINIT::SetView(float angleY, float angleX)
 {
-	g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z,0.f); //получение положения объекта за которым закреплена камера
+	if (OBJECT::set_gg) {
+		g_At = XMVectorSet(OBJECT::set_gg->x, OBJECT::set_gg->y, OBJECT::set_gg->z, 0.f); //получение положения объекта за которым закреплена камера
+	}
+	else {
+		g_At = viewPoint;
+	}
 	if (angleY != 0 || angleX !=0) //если есть изменения в координатах мыши
 	{
 		if (angleY != 0) { //вращение вокруг оси У т.е. смещение мыши по х
@@ -342,6 +408,58 @@ void D3DINIT::SetView(float angleY, float angleX)
 	
 	XMVECTOR Eye = D3DINIT::ViewDist*g_Eye+g_At;
 	g_View = XMMatrixLookAtLH(Eye, g_At, g_Up); //устанавливаем новой положение камеры а если точнее матрицы вида
+}
+
+void D3DINIT::SetCamera()
+{
+	if (WININIT::mousepress)
+	{
+
+		if (show)
+		{
+			SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+			show = !show;
+		}
+	}
+	else
+	{
+		if (!show)
+		{
+			show = !show;
+		}
+
+	}
+
+	POINT p;
+	GetCursorPos(&p);
+
+	if (WININIT::mousepress)
+	{
+		ang = 0.3 * (WINDOW_WIDTH / 2 - p.x) * XM_PI / 180;
+		ang2 = 0.3 * (WINDOW_HEIGHT / 2 - p.y) * XM_PI / 180;
+	}
+
+	SetView(ang, ang2);
+
+	if (WININIT::mousepress)
+	{
+		SetCursorPos(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+	}
+
+
+}
+
+void D3DINIT::SetPlayer(OBJECT* obj)
+{
+	OBJECT::set_gg = obj;
+}
+
+void D3DINIT::Render()
+{
+	RenderStart();
+	SetCamera();
+	OBJECT::drawall();
+	RenderEnd();
 }
 
 OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем из *.obj файла
@@ -571,7 +689,8 @@ OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //чита
 }
 void OBJECT::step()
 {
-	/*
+	
+	/*е
 		x += vx;
 		y += vy;
 		z += vz;
@@ -834,11 +953,11 @@ void OBJECT::draw()
 	XMMATRIX mScale = XMMatrixScaling(xs,ys,zs); //меняем маштаб пирамиды
 	g_World = mScale * mSpinY*mSpinX*mSpinZ*mTrans;
 	ConstantBuffer cb;
-	cb.mWorld = XMMatrixTranspose(g_World);
-	cb.mView = XMMatrixTranspose(g_View);
-	cb.mProjection = XMMatrixTranspose(g_Projection);
+	cb.mWVP = XMMatrixTranspose(g_World*g_View*g_Projection);
+	cb.World = XMMatrixTranspose(g_World);
 	cb.colorWhenNoLight = blend;
 	
+
 
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 	
@@ -883,6 +1002,10 @@ OBJECT::~OBJECT()
 
 void LIGHT::lightAll()
 {
+
+	g_pImmediateContext->PSSetShader(g_pPixelShaderSM, NULL, 0); //устанавливаем пиксельный шейдер
+	g_pImmediateContext->VSSetShader(g_pVertexShaderSM, NULL, 0); //устанавливаем вершинный шейдер
+
 	LIGHT* o;
 
 	ConstantBufferLight cbl;
@@ -892,6 +1015,7 @@ void LIGHT::lightAll()
 		o = (LIGHT*)idsP[i];
 		o->setLight(cbl,cbpl);
 	}
+	ID3D11ShaderResourceView* depthMapTexture;     
 	for (int i = 0; i < currentidN; i++)
 	{
 		o = (LIGHT*)idsN[i];
@@ -902,13 +1026,59 @@ void LIGHT::lightAll()
 	g_pImmediateContext->UpdateSubresource(g_pConstantBufferLight, 0, NULL, &cbl, 0, 0); //обновление констатных буфферов для дальнейшей передачи их в шейдеры
 	g_pImmediateContext->UpdateSubresource(g_pConstantBufferPointLight, 0, NULL, &cbpl, 0, 0);
 	o = NULL;
+
+	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
+	//настройка вьюпорта
+	D3D11_VIEWPORT vp;
+	vp.Width = (FLOAT)WINDOW_WIDTH;
+	vp.Height = (FLOAT)WINDOW_HEIGHT;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	//подключаем вьюпорт к контексту устроства
+	g_pImmediateContext->RSSetViewports(1, &vp);
+
+	// Передаем в шейдер оба sampler state
+
+	ID3D11SamplerState* m_sampleStateClap;
+
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	// Создаем sampler state для того чтобы 
+// установить режим адресации текстуры как CLAMP
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+
+
+	if (!FAILED(g_pd3device->CreateSamplerState(&samplerDesc, &m_sampleStateClap))) {
+
+	}
+
+	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0); //устанавливаем пиксельный шейдер
+	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0); //устанавливаем вершинный шейдер
+	g_pImmediateContext->PSSetSamplers(1, 1, &m_sampleStateClap);
+	g_pImmediateContext->PSSetShaderResources(1, 1, &cbl.tex[0]);
+	g_pImmediateContext->VSSetSamplers(1, 1, &m_sampleStateClap);
+	g_pImmediateContext->VSSetShaderResources(1, 1, &cbl.tex[0]);
+
 }
 
-LIGHT::LIGHT(XMFLOAT4 PosP,  XMFLOAT4 Color, typelight typeL)
+LIGHT::LIGHT(XMFLOAT4 PosP,  XMFLOAT4 Color, typelight typeL, XMFLOAT4 lookAt)
 {
 	tl = typeL;
-	
-
 
 	if (tl == pointLight)
 	{
@@ -920,11 +1090,14 @@ LIGHT::LIGHT(XMFLOAT4 PosP,  XMFLOAT4 Color, typelight typeL)
 	}
 	if (tl == normalLight)
 	{
-		Dir = PosP;
+		LookAt = lookAt;
+		Pos = PosP;
 		CurColor = Color;
 		id = currentidN++;
-		
+		GenerateViewMatrix();
+		GenerateProjectionMatrix(1.f, 500.f);
 		idsN[id] = (int)this;
+		InitShadow();
 	}
 	
 }
@@ -938,8 +1111,10 @@ void LIGHT::setLight(ConstantBufferLight& cbl, ConstantBufferPointLight& cbpl)
 	}
 	if (tl == normalLight)
 	{
-		cbl.vLightDir[id] = Dir;
+		cbl.vLightDir[id] = {  Pos.x - LookAt.x,  Pos.y - LookAt.y, Pos.z - LookAt.z ,1.f };
 		cbl.vLightColor[id] = CurColor;
+		cbl.VWPL[id] = XMMatrixTranspose(g_World*m_viewMatrix*m_projectionMatrix);
+		cbl.tex[id] = RenderShadowMap();
 	}
 }
 
@@ -951,7 +1126,6 @@ LIGHT::~LIGHT()
 			LIGHT::idsP[i] = LIGHT::idsP[i + 1];
 			LIGHT* a = (LIGHT*)LIGHT::idsP[i];
 			a->id = i;
-
 		}
 		LIGHT::currentidP--;
 		LIGHT::idsP[LIGHT::currentidP] = 0;
@@ -969,4 +1143,144 @@ LIGHT::~LIGHT()
 		LIGHT::idsN[LIGHT::currentidN] = 0;
 	}
 
+}
+
+void LIGHT::GenerateViewMatrix()
+{
+	XMVECTOR camPos = XMVectorSet(Pos.x, Pos.y, Pos.z, 0.0f);
+	XMVECTOR camLookAt = XMVectorSet(LookAt.x,LookAt.y,LookAt.z, 0.0f);
+	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	m_viewMatrix = XMMatrixLookAtLH(camPos, camLookAt, Up);
+}
+
+void LIGHT::GenerateProjectionMatrix(float screenNear, float screenDepth)
+{
+	float fieldOfView =XM_PIDIV2;
+	float screenAspect = 1.0f;
+	m_projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
+}
+
+bool LIGHT::InitShadow()
+{
+	// Сначала мы создаем текстуру в которую будем выводить shadow map
+
+	// создаем текстуру размером SHADOWMAP_WIDTH х SHADOWMAP_HEIGHT
+	// данная текстура будет использоваться как render target (установили
+	// флаг - D3D11_BIND_RENDER_TARGET)
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+	textureDesc.Width = SHADOWMAP_WIDTH;
+	textureDesc.Height = SHADOWMAP_HEIGHT;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+	if (FAILED(g_pd3device->CreateTexture2D(&textureDesc, NULL, &m_RTTexture)))
+		return false;
+
+	// Создаем render target view
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+	if (FAILED(g_pd3device->CreateRenderTargetView(m_RTTexture, &renderTargetViewDesc, &m_RTV)))
+		return false;
+
+	// создаем shader resource view c ранее созданной текстуры
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	if (FAILED(g_pd3device->CreateShaderResourceView(m_RTTexture, &shaderResourceViewDesc, &m_SRV)))
+		return false;
+
+	// Создаем Depth Stencil View
+
+	// Создаем текстуру глубины
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
+	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
+	depthBufferDesc.Width = SHADOWMAP_WIDTH;
+	depthBufferDesc.Height = SHADOWMAP_HEIGHT;
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.SampleDesc.Quality = 0;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.MiscFlags = 0;
+	if (FAILED(g_pd3device->CreateTexture2D(&depthBufferDesc, NULL, &m_DSTexture)))
+		return false;
+
+	// создаем depth stencil view
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+	depthStencilViewDesc.Format = depthBufferDesc.Format;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+	if (FAILED(g_pd3device->CreateDepthStencilView(m_DSTexture, &depthStencilViewDesc, &m_DSV)))
+		return false;
+
+	// Задаем вьюпорт по размеру нашей текстуры
+	m_viewport.Width = (float)SHADOWMAP_WIDTH;
+	m_viewport.Height = (float)SHADOWMAP_HEIGHT;
+	m_viewport.MinDepth = 0.0f;
+	m_viewport.MaxDepth = 1.0f;
+	m_viewport.TopLeftX = 0.0f;
+	m_viewport.TopLeftY = 0.0f;
+
+
+
+
+	return true;
+}
+
+ID3D11ShaderResourceView* LIGHT::RenderShadowMap()
+{
+	g_pImmediateContext->OMSetRenderTargets(1, &m_RTV, m_DSV);
+	// Устанавливаем вьюпорт
+	g_pImmediateContext->RSSetViewports(1, &m_viewport);
+	float color[4] = { 0.f, 0.f, 0.f, 1.f };
+	g_pImmediateContext->ClearRenderTargetView(m_RTV, color);
+	g_pImmediateContext->ClearDepthStencilView(m_DSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	XMMATRIX copyV = g_View;
+	XMMATRIX copyP = g_Projection;
+
+	g_View = m_viewMatrix;
+	g_Projection = m_projectionMatrix;
+	OBJECT::drawall();
+	//g_View = copyV;
+	//g_Projection = copyP;
+
+	return m_SRV;
+}
+
+XMMATRIX LIGHT::GetViewMatrix()
+{
+	return m_viewMatrix;
+}
+
+XMMATRIX LIGHT::GetProjectionMatrix()
+{
+	return m_projectionMatrix;
+}
+
+void LIGHT::SetShadowMapSize(const int& x, const int& y)
+{
+	SHADOWMAP_WIDTH = x;
+	SHADOWMAP_HEIGHT = y;
+}
+
+void LIGHT::GetShadowMapSize(int& x, int& y)
+{
+	x = SHADOWMAP_WIDTH;
+	y = SHADOWMAP_HEIGHT;
 }

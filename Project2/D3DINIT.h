@@ -13,6 +13,7 @@
 #include <D3DX11tex.h>
 #include <fstream>
 #include <vector>
+#include "WININIT.h"
 #define WINDOW_HEIGHT 800 //размеры окна
 #define WINDOW_WIDTH 800
 #define BBP 16 //глубина цвета
@@ -33,6 +34,8 @@ static IDXGISwapChain *g_pSwapChain = NULL;  // работа с буфером �
 static ID3D11RenderTargetView *g_pRenderTargetView = NULL; // собственно задний буфер
 static ID3D11VertexShader *g_pVertexShader = NULL; //вершинный шейдер
 static ID3D11PixelShader *g_pPixelShader = NULL; // пиксельынй шейдер
+static ID3D11PixelShader* g_pPixelShaderSM = NULL; // пиксельынй шейдер для карты теней
+static ID3D11VertexShader* g_pVertexShaderSM = NULL; // пиксельынй шейдер для карты теней
 static ID3D11InputLayout *g_pVertexLayout = NULL; // описание формата вершин
 static ID3D11Buffer *g_pVertexBuffer = NULL; // Буфер вершин
 static ID3D11Buffer *g_pIndexBuffer = NULL; //Буфер индексов вершин в каком порядке отрисовывать
@@ -41,7 +44,7 @@ static ID3D11Buffer* g_pConstantBufferLight = NULL; // Констатный бу
 static ID3D11Texture2D* g_pDepthStencil = NULL; //буфер глубин отвечает за то какой пиксель должен быть отрисован в зависимости от глубины объекта
 static ID3D11DepthStencilView* g_pDepthStencilView = NULL; //вид буффера глубин
 static ID3D11Buffer* g_pConstantBufferPointLight = NULL; //констатный буфер для данных точечного освещения
-static ID3D11PixelShader* g_pPixelShaderLightO = NULL;
+static ID3D11PixelShader* g_pPixelShaderLightO = NULL; //шейдер для светящихся объектов
 
 static XMMATRIX g_World; //матрица мира00
 static XMMATRIX g_View; //матрциа вида
@@ -70,9 +73,8 @@ struct SimpleVertex
 
 struct ConstantBuffer
 {
-	XMMATRIX mWorld; //матрица мира
-	XMMATRIX mView; //марица вида
-	XMMATRIX mProjection; //матрица проекции
+	XMMATRIX World;
+	XMMATRIX mWVP; //матрица мира
 	XMFLOAT4 colorWhenNoLight;
 };
 
@@ -81,6 +83,9 @@ static struct ConstantBufferLight
 	XMFLOAT4 vLightDir[100]; // в альфа канале будем хранить коэффициент яркости
 	XMFLOAT4 vLightColor[100];
 	XMFLOAT4 vOutputColor; // здесь запишем инфу о кол-во света 0 - кол-во направленного света, 1 - кол-во точечных источников света, 2 - кол-во конусных
+	XMMATRIX VWPL[10];
+	ID3D11ShaderResourceView *tex[10];
+
 };
 
 static struct ConstantBufferPointLight
@@ -90,38 +95,45 @@ static struct ConstantBufferPointLight
 };
 
 
-
+class OBJECT;
 
 class D3DINIT
 {
 	
 public:
-	static XMVECTOR g_Eye;
-	static XMVECTOR g_Up; 
+	static XMVECTOR g_Eye; //направление взгляда
+	static XMVECTOR g_Up; //направление верха
 	static float ViewDist;
-	
 	D3DINIT(HWND mwh);
 	~D3DINIT();
+	bool Initialization();
+	float ViewAngle = 0;
+	void SetCamera();
+	void SetPlayer(OBJECT* obj);
+	void Render();
+	HWND main_window_handle;//окно к которому будет привязаны объекты директх
+	void SetGameSpeed(int spd);//установка задержки, скорость игры
+	void SetViewPoint(float x, float y, float z);
+private:
 	HRESULT InitDevice();//инициализайция директХ
+	HRESULT CompileShaderFromFile(LPCSTR szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+	HRESULT InitGeometry();
+	HRESULT InitMatrixes(); //Инициализация матриц
 	void CleanUpDevice(); //удаление объектов Direct3D
+	int GameSpeed = 1000 / 30;
+	void SetView(float angleY, float angleX); // изменение матрицы мира
+	 //откуда смотрим
+	XMVECTOR viewPoint = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	void RenderStart();//начало отрисовки
 	//между этими функциями размещаются все операции с устройством рисования ImmedeateContext
 	void RenderEnd();//отрисовка перенос из заднего буфера в передний (на экран)
-	float ViewAngle = 0;
-	HRESULT InitMatrixes(); //Инициализация матриц
-	void SetView(float angleY,float angleX); // изменение матрицы мира
-	HRESULT InitGeometry();
-	HRESULT CompileShaderFromFile(LPCSTR szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
-	HWND main_window_handle;//окно к которому будет привязаны объекты директх
-	
-	void SetGameSpeed(int spd);//установка задержки, скорость игры
-private:
-	int GameSpeed = 1000 / 30;
-	 //откуда смотрим
 	XMVECTOR g_At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Куда смотрим
 	 // Направление верха
-	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f); // Горизонтальная ось вокруг которой вектор направления на кмеру вращается вверх вниз
+	XMVECTOR helpXas = XMVectorSet(1.f, 0.f, 0.f, 0.f); // Горизонтальная ось вокруг которой вектор направления на кaмеру вращается вверх вниз
 	float vertAng = 0; //вертикаьлный угол камеры //данные для настройки матрицы вида
+	bool show = true;
+	float ang = 0;
+	float ang2 = 0;
 };
 
 
@@ -133,16 +145,37 @@ public:
 	static int idsP[100];
 	static int idsN[100];
 	static void lightAll(); // перемещениие в структуры контантного буффер инфы о всех светах и обновление глобальных контантных буфферов
-	LIGHT(XMFLOAT4 PosP, XMFLOAT4 Color, typelight typeL);
+	LIGHT(XMFLOAT4 PosP, XMFLOAT4 Color, typelight typeL,XMFLOAT4 lookAt);
 
 	XMFLOAT4 Pos; //позиция и Радиус в альфа канале для точечного
-	XMFLOAT4 Dir; //направление и интенсивность в альфа канале ля направенного света
+	XMFLOAT4 LookAt; //направление и интенсивность в альфа канале ля направенного света
 	XMFLOAT4 CurColor; //цвет света
 	void setLight(ConstantBufferLight& cbl, ConstantBufferPointLight& cbpl); // перемещение текущих данный о конкретном источники света в струкутру по конкретному ай ди
 	int id = 0; // ид текущего света
 	~LIGHT();
 	typelight tl;
+
+	void GenerateViewMatrix();
+	void GenerateProjectionMatrix(float, float);
+	bool InitShadow();
+	ID3D11ShaderResourceView* RenderShadowMap();
+	XMMATRIX GetViewMatrix();
+	XMMATRIX GetProjectionMatrix();
+	void SetShadowMapSize(const int& x, const int& y);
+	void GetShadowMapSize(int& x, int& y);
+
 private:
+	XMMATRIX m_viewMatrix;
+	XMMATRIX m_projectionMatrix;
+	D3D11_VIEWPORT m_viewport;
+
+	ID3D11Texture2D* m_RTTexture;
+	ID3D11Texture2D* m_DSTexture;
+	ID3D11RenderTargetView* m_RTV;
+	ID3D11ShaderResourceView* m_SRV;
+	ID3D11DepthStencilView* m_DSV;
+	int SHADOWMAP_WIDTH = 1024;
+	int SHADOWMAP_HEIGHT = 1024;
 
 };
 
@@ -151,6 +184,7 @@ class OBJECT
 {
 
 	public:
+		friend class D3DINIT;
 		static OBJECT* set_gg;
 		static int spd;
 		static int global_ids[1000];
