@@ -60,7 +60,7 @@ void Tetris::Run()
 						case 0: f = (figure*)new squareFigure(width / 2, 0, height, width); break;
 						case 1: f = (figure*)new lineFigure(width / 2, 0, height, width); break;
 						case 2: f = (figure*)new GFigure(width / 2, 0, height, width); break;
-						case 3: f = (figure*)new GFigure(width / 2, 0, height, width); break;
+						case 3: f = (figure*)new TFigure(width / 2, 0, height, width); break;
 						default:
 							break;
 						}
@@ -107,7 +107,7 @@ void Tetris::Run()
 					case 0: f = (figure*)new squareFigure(width / 2, 0, height, width); break;
 					case 1: f = (figure*)new lineFigure(width / 2, 0, height, width); break;
 					case 2: f = (figure*)new GFigure(width / 2, 0, height, width); break;
-					case 3: f = (figure*)new GFigure(width / 2, 0, height, width); break;
+					case 3: f = (figure*)new TFigure(width / 2, 0, height, width); break;
 					default:
 						break;
 					}
