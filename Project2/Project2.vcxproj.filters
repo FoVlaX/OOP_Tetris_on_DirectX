@@ -29,17 +29,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ver.txt">
-      <Filter>Исходные файлы</Filter>
-    </Text>
-    <Text Include="ind.txt">
-      <Filter>Исходные файлы</Filter>
-    </Text>
-    <Text Include="galaxycode.txt">
-      <Filter>Исходные файлы</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="D3DINIT.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
