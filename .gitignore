@@ -12,7 +12,7 @@
 *.opendb
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-.vs
+.vs/*
 Debug
 # Build results
 [Dd]ebug/
