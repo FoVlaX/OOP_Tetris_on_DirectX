@@ -5,7 +5,7 @@ int OBJECT::global_ids[1000] = { 0 }; //объявление глобальлн�
 int OBJECT::current_id = 0;
 OBJECT* OBJECT::set_gg = NULL;
 float D3DINIT::ViewDist =70.f;
-
+float OBJECT::H = 23;
 XMVECTOR D3DINIT::g_Eye = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR D3DINIT::g_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 int OBJECT::spd = 25;
@@ -13,8 +13,9 @@ int LIGHT::currentidP = 0;
 int LIGHT::currentidN = 0;
 int LIGHT::idsP[100] = { 0 };
 int LIGHT::idsN[100] = { 0 };
-D3DINIT::D3DINIT(HWND mwh)
+D3DINIT::D3DINIT(HWND mwh, HINSTANCE h)
 {
+	main_instance = h;
 	main_window_handle = mwh;
 }
 
@@ -175,8 +176,9 @@ void D3DINIT::RenderStart()
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor); //очищаем задний буфер
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0); //очищаем буфер глубин
 
-
-	LIGHT::lightAll();
+	if (LIGHT::currentidN > 0 || LIGHT::currentidP > 0) {
+		LIGHT::lightAll();
+	}
 
 	
 
@@ -464,7 +466,7 @@ void D3DINIT::Render()
 
 OBJECT::OBJECT(char const* vertxt,  char const* texture, HRESULT &hr) //читаем из *.obj файла
 {
-
+	H = 46;
 	FILE* vtxt;
 
 	vtxt = fopen(vertxt, "r");// открываем наши фалйлы
@@ -914,6 +916,23 @@ void OBJECT::ReloadModel(char const* vertxt, char const* texture)
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	// создаем интерфейс сэмпла текстурировани¤
 	hr = g_pd3device->CreateSamplerState(&sampDesc, &pSamplerLinear);
+}
+
+void OBJECT::setCoord(float xx, float yy)
+{
+	x = 1 + xx * 2;
+	y = H - yy * 2;
+}
+
+OBJECT* OBJECT::objCoordExist(int xx, int yy, int zz)
+{
+	for (int i = 0; i < current_id; i++) {
+		OBJECT* o = (OBJECT*)OBJECT::global_ids[i];
+		if (o->x == xx && o->y == yy && o->z == zz) {
+			return o;
+		}
+	}
+	return nullptr;
 }
 
 void OBJECT::setname(const char* nm)

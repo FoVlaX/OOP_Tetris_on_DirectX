@@ -159,7 +159,7 @@
   <ItemGroup>
     <ClCompile Include="D3DINIT.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="server.cpp" />
+    <ClCompile Include="Tetris.cpp" />
     <ClCompile Include="WININIT.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,7 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3DINIT.h" />
-    <ClInclude Include="server.h" />
+    <ClInclude Include="Tetris.h" />
     <ClInclude Include="WININIT.h" />
   </ItemGroup>
   <ItemGroup>

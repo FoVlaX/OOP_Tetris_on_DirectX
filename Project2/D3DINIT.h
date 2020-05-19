@@ -104,16 +104,18 @@ public:
 	static XMVECTOR g_Eye; //направление взгляда
 	static XMVECTOR g_Up; //направление верха
 	static float ViewDist;
-	D3DINIT(HWND mwh);
+	D3DINIT(HWND mwh, HINSTANCE h);
 	~D3DINIT();
 	bool Initialization();
 	float ViewAngle = 0;
 	void SetCamera();
 	void SetPlayer(OBJECT* obj);
 	void Render();
-	HWND main_window_handle;//окно к которому будет привязаны объекты директх
-	void SetGameSpeed(int spd);//установка задержки, скорость игры
+
+	HWND main_window_handle; //окно к которому будет привязаны объекты директх
+	void SetGameSpeed(int spd); //установка задержки, скорость игры
 	void SetViewPoint(float x, float y, float z);
+	
 private:
 	HRESULT InitDevice();//инициализайция директХ
 	HRESULT CompileShaderFromFile(LPCSTR szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
@@ -134,6 +136,7 @@ private:
 	bool show = true;
 	float ang = 0;
 	float ang2 = 0;
+	
 };
 
 
@@ -223,6 +226,13 @@ class OBJECT
 		float speed = 0;
 		XMFLOAT4 blend;
 		void ReloadModel(char const* vertxt, char const* texture);
+		void setCoord(float xx, float yy);
+		static OBJECT* objCoordExist(int xx, int yy, int zz);
+	
+		static void setH(int h) {
+			H = 2*h;
+		}
+		static float H;
 	private:
 		ID3D11ShaderResourceView* pTextureRV = NULL; //Объект текстуры
 		ID3D11SamplerState* pSamplerLinear = NULL; //параметры nalozheniya текстуры obrazec

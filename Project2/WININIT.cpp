@@ -51,7 +51,7 @@ bool WININIT::mousepress = false;
  
 
 
-WININIT::WININIT(int WIDTH, int HEIGHT,const char *caption, HINSTANCE hinstance, HWND &hwnd/*идентификатор окно понадобиться для привязки устройста директХ к нему*/)
+WININIT::WININIT(int WIDTH, int HEIGHT,const char *caption, HINSTANCE hinstance, HWND &hwnd/*идентификатор окнa понадобиться для привязки устройста директХ к нему*/)
 {
 
 	WNDCLASSEX winclass = { 0 }; //класс окна

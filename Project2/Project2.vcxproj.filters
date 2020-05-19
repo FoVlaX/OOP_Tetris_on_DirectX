@@ -24,7 +24,7 @@
     <ClCompile Include="WININIT.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="server.cpp">
+    <ClCompile Include="Tetris.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -46,7 +46,7 @@
     <ClInclude Include="WININIT.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="server.h">
+    <ClInclude Include="Tetris.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
