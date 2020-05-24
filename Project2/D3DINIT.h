@@ -84,8 +84,7 @@ static struct ConstantBufferLight
 	XMFLOAT4 vLightColor[100];
 	XMFLOAT4 vOutputColor; // здесь запишем инфу о кол-во света 0 - кол-во направленного света, 1 - кол-во точечных источников света, 2 - кол-во конусных
 	XMMATRIX VWPL[10];
-	ID3D11ShaderResourceView *tex[10];
-
+	ID3D11ShaderResourceView *tex[10];  //карта теней будущем
 };
 
 static struct ConstantBufferPointLight

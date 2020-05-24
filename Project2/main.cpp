@@ -7,7 +7,6 @@ int WINAPI WinMain(HINSTANCE hinstance,
 	LPSTR lpcmdline,
 	int ncmdshow){
 
-
 	Tetris tetris(hinstance);
 	tetris.Run();
 

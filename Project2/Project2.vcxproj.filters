@@ -40,13 +40,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="depth.fx">
-      <Filter>Исходные файлы</Filter>
-    </FxCompile>
     <FxCompile Include="shaderPS.fx">
       <Filter>Исходные файлы</Filter>
     </FxCompile>
     <FxCompile Include="shaderVS.fx">
+      <Filter>Исходные файлы</Filter>
+    </FxCompile>
+    <FxCompile Include="depth.fx">
       <Filter>Исходные файлы</Filter>
     </FxCompile>
   </ItemGroup>
